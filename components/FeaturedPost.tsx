@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(12),
   },
   title: {
-    fontFamily: "GorditaBold",
+    fontFamily: "GorditaMedium",
     color: "#fff",
     fontSize: s(12),
   },
