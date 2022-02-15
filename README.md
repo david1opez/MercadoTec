@@ -41,4 +41,23 @@ Estudiantes del ITS de entre 17 y 28 años de clase media o media-baja
 
 
 ---
-## Documentación
+
+## Antecedentes
+Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **ReactNative** y **Typescript**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información.
+
+### JavaScript
+JavaScript NO tiene nada que ver con el lenguaje Java. Según entiendo, JavaScript comenzó como Mocha, luego se convirtió en LiveScript y luego se convirtió en JavaScript cuando Netscape y Sun se juntaron (Información que no importa la verdad).
+
+En este proyecto se utilizan los siguientes conceptos de JavaScript:
+- Variables: (Las variables en JavaScript se definen de forma diferente que en lenguajes de tipado fuerte como Java) https://www.w3schools.com/js/js_variables.asp
+- Constantes:(Esta no tiene mucha ciencia, solo es saber como declararlas) https://www.w3schools.com/js/js_const.asp
+- Operadores ++, +=, --, -=: https://www.w3schools.com/js/js_operators.asp
+- Arreglos: https://www.w3schools.com/js/js_arrays.asp
+- Métodos de los arreglos: (Esto sirve para hacer más rápido y sencillo trabajar con arrays, para por ejemplo filtrar u ordenarlos) ttps://www.w3schools.com/js/js_array_methods.asp
+- Mtodo .map(): (Este está en los métodos de arreglos, pero este es el que más utilizamos en la aplicación)https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+- Objetos
+- If statements
+- Funciones con parametros y regreso de valor
+- For loops
+- SetTimeInterval
+- SetTimeOut
