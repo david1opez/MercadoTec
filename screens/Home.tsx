@@ -122,7 +122,7 @@ const Home = () => {
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
 
   return (
-    <View>
+    <View style={styles.container}>
 
       <Navbar />
 
@@ -172,7 +172,6 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#FFF",
   },
   featuredPostsContainer: {
