@@ -38,13 +38,12 @@ Estudiantes del ITS de entre 17 y 28 años de clase media o media-baja
    8. Escribir `cd Desktop` y dar enter para navegar al escritorio
    9. Escribir `git clone https://github.com/david1opez/MercadoTec.git` para clonar el repositorio y poder editarlo
    10. Una vez descargado el código, escribir en la terminal `npm install` para descargar todos los paquetes necesarios
-   11. Investigar qué es y cómo usar Git, porque ya son muchos pasos aquí :)
 
 
 ---
 
 ## Antecedentes
-Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **Node.js**, **TypeScript** y **ReactNative**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información, NO NECESITAS APRENDERTE TODO DE MEMORIA, para eso está Google.
+Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **Node.js**, **TypeScript**, **ReactNative** y **Git**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información, NO NECESITAS APRENDERTE TODO DE MEMORIA, para eso está Google.
 
 ### JavaScript
 JavaScript NO tiene nada que ver con el lenguaje Java. Según entiendo, JavaScript comenzó como Mocha, luego se convirtió en LiveScript y luego se convirtió en JavaScript cuando Netscape y Sun se juntaron (Información que no importa la verdad).
