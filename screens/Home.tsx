@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: vs(20),
   },
   categoriesContainer: {
-    marginBottom: vs(15),
+    marginBottom: vs(20),
   },
   categoriesTitle: {
     marginLeft: s(16),
