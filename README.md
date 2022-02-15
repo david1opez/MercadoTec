@@ -4,15 +4,6 @@ Los estudiantes muchas veces se ven en la necesidad de vender producto para pode
 
 Buscamos resolver este problema dandoles una plataorma dónde sus productos tengan más visibilidad y lleguen a una audiencia más específica
 
-&nbsp;
-### *Descripción:*
-Mercado tec es una aplicación para promocionar productos que venden en el campus, donde los estudiantes puedan publicar lo que venden, en qué parte del campus están para ir a comprarles y un modo para contactarlos.
-
-&nbsp;
-### *Público objetivo:*
-Estudiantes del ITS de entre 17 y 28 años de clase media o media-baja
-
-
 ---
 
 
@@ -37,23 +28,24 @@ Estudiantes del ITS de entre 17 y 28 años de clase media o media-baja
    7. Escribir `npm install -g typescript` y dar enter
    8. Escribir `cd Desktop` y dar enter para navegar al escritorio
    9. Escribir `git clone https://github.com/david1opez/MercadoTec.git` para clonar el repositorio y poder editarlo
-   10. Una vez descargado el código, escribir en la terminal `npm install` para descargar todos los paquetes necesarios
+   10. Escribir `cd MercadoTec` para navegar al folder del proyecto
+   11. Una vez descargado el código, escribir en la terminal `npm install` para descargar todos los paquetes necesarios
 
 
 ---
 
 ## Antecedentes
-Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **Node.js**, **TypeScript**, **ReactNative** y **Git**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información, NO NECESITAS APRENDERTE TODO DE MEMORIA, para eso está Google.
+Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **Node.js**, **TypeScript**, **ReactNative** y **Git**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información, NO NECESITAS APRENDERTE TODO DE MEMORIA, para eso siempre está Google.
 
 ### JavaScript
 JavaScript NO tiene nada que ver con el lenguaje Java. Según entiendo, JavaScript comenzó como Mocha, luego se convirtió en LiveScript y luego se convirtió en JavaScript cuando Netscape y Sun se juntaron (Información que no importa la verdad).
 
 En este proyecto se utilizan los siguientes conceptos de JavaScript:
 - Variables: (Las variables en JavaScript se definen de forma diferente que en lenguajes de tipado fuerte como Java) https://www.w3schools.com/js/js_variables.asp
-- Constantes:(Esta no tiene mucha ciencia, solo es saber como declararlas) https://www.w3schools.com/js/js_const.asp
+- Constantes: (Esta no tiene mucha ciencia, solo es saber como declararlas) https://www.w3schools.com/js/js_const.asp
 - Operadores ++, +=, --, -=: https://www.w3schools.com/js/js_operators.asp
 - Arreglos: https://www.w3schools.com/js/js_arrays.asp
-- Métodos de los arreglos: (Esto sirve para hacer más rápido y sencillo trabajar con arrays, para por ejemplo filtrar u ordenarlos) ttps://www.w3schools.com/js/js_array_methods.asp
+- Métodos de los arreglos: (Esto sirve para hacer más rápido y sencillo trabajar con arrays, para por ejemplo filtrar u ordenarlos) https://www.w3schools.com/js/js_array_methods.asp
 - Método .map(): (Este está en los métodos de arreglos, pero este es el que más utilizamos en la aplicación)https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 - Objetos: https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Working_with_Objects
 - If statements: (Se declaran igual que en Java "if(){}else if(){}else{}") https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else
