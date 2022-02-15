@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
-import React from 'react';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import Svg, { Path, Rect } from "react-native-svg";
 import Icon from "../assets/icons";
 import {vs, s} from "react-native-size-matters";
@@ -10,6 +10,8 @@ import{ colors } from "../StyleVariables";
 import Navbar from "../components/Navbar";
 import Post from '../components/Post';
 import FeaturedPost from '../components/FeaturedPost';
+import Category from '../components/Category';
+
 
 type Post = {
   id: number,
@@ -117,13 +119,15 @@ const categories: string[] = [
 ];
 
 const Home = () => {
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+
   return (
     <View>
 
       <Navbar />
 
       {/* Featured */}
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.featuredPostsContainer}>
         {
           featuredPosts.map((post: any, index: number) => {
             return <FeaturedPost key={index} index={index}/>
@@ -132,13 +136,25 @@ const Home = () => {
       </ScrollView>
 
       {/* Categories */}
-      <View>
-        <ScrollView>
-        </ScrollView>
-      </View>
+      <Text style={styles.categoriesTitle}>Categorías :</Text>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+        {
+          categories.map((category: string, index: number) => {
+            return (
+              <Category
+                key={index}
+                name={category}
+                index={index}
+                activeCategoryIndex={activeCategoryIndex}
+                returnIndex={(index: number) => {setActiveCategoryIndex(index)}}
+              />
+            )
+          })
+        }
+      </ScrollView>
 
       {/* Posts */}
-      <View>
+      <View style={styles.postsContainer}>
         <ScrollView>
           {
             posts.map((post: any, index: number) => {
@@ -159,7 +175,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFF",
   },
-  FeaturedPostsContainer: {},
-  CategoriesContainer: {},
-  PostsContainer: {},
+  featuredPostsContainer: {
+    marginBottom: vs(20),
+  },
+  categoriesContainer: {
+    marginBottom: vs(15),
+  },
+  categoriesTitle: {
+    marginLeft: s(16),
+    marginBottom: vs(5),
+    fontFamily: "GorditaMedium",
+    fontSize: s(9),
+    textDecorationLine: "underline",
+    color: colors.primary,
+  },
+  postsContainer: {
+    marginHorizontal: s(16),
+    height: vs(360),
+  },
 })
