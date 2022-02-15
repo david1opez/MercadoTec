@@ -34,10 +34,11 @@ Estudiantes del ITS de entre 17 y 28 años de clase media o media-baja
    4. Presionar `Ctrl`+`Shift`+`p` en Windows o `Cmd`+`Shift`+`p`
    5. Escribir "Debug: Javascript Debug Terminal" y presionar enter para abrir la terminal (Se puede hacer más fácil pero no me deja escribir la combinación de comandos :))
    6. Escribir `npm install -g expo-cli` y dar enter
-   7. Escribir `cd Desktop` y dar enter para navegar al escritorio
-   8. Escribir `git clone https://github.com/david1opez/MercadoTec.git` para clonar el repositorio y poder editarlo
-   9. Una vez descargado el código, escribir en la terminal `npm install` para descargar todos los paquetes necesarios
-   10. Investigar qué es y cómo usar Git, porque ya son muchos pasos aquí :)
+   7. Escribir `npm install -g typescript` y dar enter
+   8. Escribir `cd Desktop` y dar enter para navegar al escritorio
+   9. Escribir `git clone https://github.com/david1opez/MercadoTec.git` para clonar el repositorio y poder editarlo
+   10. Una vez descargado el código, escribir en la terminal `npm install` para descargar todos los paquetes necesarios
+   11. Investigar qué es y cómo usar Git, porque ya son muchos pasos aquí :)
 
 
 ---
@@ -78,3 +79,12 @@ Para esta aplicación utilizaremos en vez del comando `npm` utilizaremos `expo` 
 - Package.json: Este archivo contiene la información de la aplicación para Node, lo más importante de este archivo son las dependencies, aquí podemos ver los paquetes que hemos instalado y sus versiones en caso de que algo no funcione o salga mal. https://docs.npmjs.com/cli/v7/configuring-npm/package-json
 
 ### TypeScript
+TypeScript es un lenguaje de programación porque podemos definir los tipos de variables, constantes, funciones, etc. que usamos para evitar posibles errores de syntaxis. Es EXACTAMENTE IGUAL QUE JAVASCRIPT, solo que aquí por ejemplo al definir una variable podemos definir que su tipo, como en lenguajes de tipado fuerte `let nombre: string = Juan`.
+En proyectos solo de JavaScript para definir un archivo de TypeScript se utiliza la extensión `.ts`, pero en proyectos de React o React Native se usa `.tsx`.
+
+- Types: https://www.typescriptlang.org/docs/handbook/basic-types.html
+- Types personalizados: https://www.typescriptlang.org/docs/handbook/basic-types.html
+- Parametros opcionales: (Solo es agregarle un signo de interrogación después del nombre del parámetro `function x(a: number, b?: number, c: number)`) https://www.typescripttutorial.net/typescript-tutorial/typescript-optional-parameters/
+- tsconfig.json: (Este archivo contiene la configuración de TypeScript en el proyecto actual) https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+
+### React Native
