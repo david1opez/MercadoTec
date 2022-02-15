@@ -130,7 +130,14 @@ const Home = () => {
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.featuredPostsContainer}>
         {
           featuredPosts.map((post: any, index: number) => {
-            return <FeaturedPost key={index} index={index}/>
+            return (
+              <FeaturedPost key={index} index={index}
+                title={post.title}
+                seller={post.seller}
+                image={post.image}
+                id={post.id}
+              />
+            )
           })
         }
       </ScrollView>
