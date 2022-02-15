@@ -6,9 +6,14 @@ import { useFonts } from 'expo-font';
 
 /* === SCREENS === */
 import Home from "./screens/Home";
+import ProductInfo from "./screens/ProductInfo";
 
+export type RootStackParamList = {
+  Home: undefined;
+  ProductInfo: {id: string};
+};
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -25,6 +30,7 @@ export default function App() {
   <NavigationContainer>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="ProductInfo" component={ProductInfo} />
     </Stack.Navigator>
   </NavigationContainer>
   );

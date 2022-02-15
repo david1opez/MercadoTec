@@ -1,13 +1,24 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import {vs, s} from "react-native-size-matters";
+import {useNavigation} from '@react-navigation/native';
 
 import{ colors } from "../StyleVariables";
 
+// TYPES
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../App';
+
+type ProductInfoScreenProp = StackNavigationProp<RootStackParamList, 'ProductInfo'>;
 
 const FeaturedPost = ({index, title, seller, image, id}: {index: number, title: string, seller: string, image: string, id: string}) => {
+  const navigation = useNavigation<ProductInfoScreenProp>();
+
   return (
-    <TouchableOpacity style={index == 0 ? [styles.container, {marginLeft: s(15)}] : styles.container}>
+    <TouchableOpacity
+      style={index == 0 ? [styles.container, {marginLeft: s(15)}] : styles.container}
+      onPress={() => {navigation.navigate("ProductInfo", {id: id})}}
+    >
 
       <Image style={styles.image} source={{uri: image}} />
       
