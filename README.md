@@ -43,7 +43,7 @@ Estudiantes del ITS de entre 17 y 28 años de clase media o media-baja
 ---
 
 ## Antecedentes
-Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **Node.js**, **ReactNative** y **Typescript**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información, NO NECESITAS APRENDERTE TODO DE MEMORIA, para eso está Google.
+Antes de empezar a trabajar en esta aplicación necesitan conocer algunos de lo conceptos básicos de **JavaScript**, **Node.js**, **TypeScript** y **ReactNative**, y aquí explicaré algunas cosas y les dejaré links para que puedan ver más información, NO NECESITAS APRENDERTE TODO DE MEMORIA, para eso está Google.
 
 ### JavaScript
 JavaScript NO tiene nada que ver con el lenguaje Java. Según entiendo, JavaScript comenzó como Mocha, luego se convirtió en LiveScript y luego se convirtió en JavaScript cuando Netscape y Sun se juntaron (Información que no importa la verdad).
@@ -76,3 +76,5 @@ En el proyecto se utilizara:
 Para esta aplicación utilizaremos en vez del comando `npm` utilizaremos `expo` para que se descarguen las versiones compatibles con expo-cli, que es lo que utilizamos para hacer la aplicación, entonces usamos `expo install` o `expo uninstall` normalmente, pero en ocasiones usaremos npm y es importante saberlo :).
 
 - Package.json: Este archivo contiene la información de la aplicación para Node, lo más importante de este archivo son las dependencies, aquí podemos ver los paquetes que hemos instalado y sus versiones en caso de que algo no funcione o salga mal. https://docs.npmjs.com/cli/v7/configuring-npm/package-json
+
+### TypeScript
