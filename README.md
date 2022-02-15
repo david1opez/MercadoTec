@@ -54,10 +54,14 @@ En este proyecto se utilizan los siguientes conceptos de JavaScript:
 - Operadores ++, +=, --, -=: https://www.w3schools.com/js/js_operators.asp
 - Arreglos: https://www.w3schools.com/js/js_arrays.asp
 - Métodos de los arreglos: (Esto sirve para hacer más rápido y sencillo trabajar con arrays, para por ejemplo filtrar u ordenarlos) ttps://www.w3schools.com/js/js_array_methods.asp
-- Mtodo .map(): (Este está en los métodos de arreglos, pero este es el que más utilizamos en la aplicación)https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/map
-- Objetos
-- If statements
-- Funciones con parametros y regreso de valor
-- For loops
-- SetTimeInterval
-- SetTimeOut
+- Método .map(): (Este está en los métodos de arreglos, pero este es el que más utilizamos en la aplicación)https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+- Objetos: https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Working_with_Objects
+- If statements: (Se declaran igual que en Java "if(){}else if(){}else{}") https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else
+- Funciones con parametros: https://www.w3schools.com/js/js_function_parameters.asp
+- Return: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/return
+- For loops: (Se declaran igual que en Java, excepto por el tipado fuerte) https://www.w3schools.com/js/js_loop_for.asp
+- SetInterval: (Esto repite un bloque de código o función cada cierto tiempo) https://developer.mozilla.org/es/docs/Web/API/setInterval
+- SetTimeOut: (Esto ejecuta un bloque de código o función despues de cierto tiempo, pero solo una vez) https://developer.mozilla.org/es/docs/Web/API/setTimeout
+- Import: https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/import
+- Export: https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Statements/export
+- Promesas: (Solo poner atención a como funcionan los métodos .then() y .catch()) https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
