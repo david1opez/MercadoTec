@@ -196,3 +196,16 @@ Aquí están otros conceptos que debemos conocer:
 - Hook `useState()`
 - Comando `expo start`: Este comando se utiliza para probar la aplicación, necesitas instalar la aplicación Expo Go en tu telefono, luego con ella escaneas el código QR que aparece despues de ejecutar el comando y puedes ver como va quedando la app.
 - Archivo app.config.ts
+
+---
+
+## En resumen
+En este documento se explican muchas cosas que necesitas saber para trabajar en esta aplicación, sé que es MUUUUUUCHO, pero no tienes que saber como hacer todo, necesito encontrar a personas que les gustaría aprender sobre todo esto, quiero enseñar lo que he aprendido en estos últimos años, porqué todas estas cosas me han llevado más lejos que todo lo que enseñan en la universidad y quiero compartirlo. Tampoco tienes que quedarte de principio a fin, puedes ayudar con la aplicación el tiempo que desees. No importa si la aplicación es un fracaso, al final haremos una aplicación que funciona y puedes incluir el proyecto en tu portafolio.
+
+Aviso que va a ser un desastre trabajar en esta aplicación, pero no necesitamos tener éxito para aprender :).
+
+En algunos folders de la aplicación podrán encontrar más información sobre componentes personalizados que usamos y demás cosas.
+
+---
+
+[Ver cómo funciona el flujo de trabajo](https://github.com/user/repo/blob/branch/other_file.md)
