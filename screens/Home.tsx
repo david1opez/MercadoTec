@@ -158,7 +158,14 @@ const Home = () => {
         <ScrollView>
           {
             posts.map((post: any, index: number) => {
-              return <Post key={index}/>
+              return (
+                <Post key={index}
+                  title={post.title}
+                  description={post.description}
+                  image={post.image}
+                  id={post.id}
+                />
+              )
             })
           }
         </ScrollView>
