@@ -15,13 +15,7 @@ const Navbar = () => {
         {/* Logo */}
         <View style={styles.logoContainer}>
 
-          {/* <Icon name="logo" width={vs(26)} height={vs(26)} color={colors.primary}/> <== PORQUE NO FUNCIONA??*/}
-          
-          <Svg width={vs(24)} height={vs(24)} viewBox="0 0 27 26">
-            <Rect x="21.6" width="5.4" height="25.2" fill={colors.primary}/>
-            <Rect x="10.8" width="5.4" height="25.2" fill={colors.primary}/>
-            <Rect width="5.4" height="25.2" fill={colors.primary}/>
-          </Svg>
+          <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
           
           <View style={styles.logoTextContainer}>
             <Text style={styles.UpperLogoText}>Mercado</Text>
