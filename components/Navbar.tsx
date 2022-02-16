@@ -3,12 +3,20 @@ import React from 'react'
 import {vs, s} from "react-native-size-matters";
 import Icon from "../assets/icons";
 import Svg, { Path, Rect } from "react-native-svg";
-
+import {useNavigation} from '@react-navigation/native';
 
 import{ colors } from "../StyleVariables";
 
+// TYPES
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../App';
+
+type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
+
 
 const Navbar = () => {
+  const navigation = useNavigation<LoginScreenProp>();
+
   return (
     <View style={styles.navbarContainer}>
 
@@ -34,7 +42,9 @@ const Navbar = () => {
           </View>
           
           {/* Seller Button */}
-          <TouchableOpacity style={styles.sellerButton}>
+          <TouchableOpacity style={styles.sellerButton}
+            onPress={() => {navigation.navigate("Login")}}
+          >
             <Icon name="store" width={vs(20)} height={vs(20)} color={colors.primary}/>
           </TouchableOpacity>
         </View>
