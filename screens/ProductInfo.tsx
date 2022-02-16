@@ -1,33 +1,36 @@
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Touchable } from 'react-native'
 import React from 'react'
 import {vs, s} from "react-native-size-matters";
 
 import{ colors } from "../StyleVariables";
+
+// COMPONENTS
+import Item from '../components/Item';
 
 const items = [
   {
     title: "Ramo con girasol y 3 tulipanes",
     description: "Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate",
     image: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1",
-    price: "115",
+    price: 115,
   },
   {
     title: "Ramo con girasol y 3 tulipanes",
     description: "Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate",
     image: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1",
-    price: "115",
+    price: 115,
   },
   {
     title: "Ramo con girasol y 3 tulipanes",
     description: "Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate",
     image: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1",
-    price: "115",
+    price: 115,
   },
   {
     title: "Ramo con girasol y 3 tulipanes",
     description: "Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate",
     image: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1",
-    price: "115",
+    price: 115,
   }
 ]
 
@@ -53,21 +56,24 @@ const ProductInfo = ({route}: any) => {
           {
             items.map((item, index) => {
               return(
-                <View key={index} style={index == 0 ? [styles.itemContainer, {marginTop: vs(30)}] : index == items.length - 1 ? [styles.itemContainer, {marginBottom: vs(70)}] : styles.itemContainer}>
-                  <Image source={{uri: item.image}} style={styles.itemImage}/>
-                  
-                  <View>
-                    <Text style={styles.itemTitle}>{item.title}</Text>
-                    <Text style={styles.itemDescription}>{item.description}</Text>
-                    <Text style={styles.itemPrice}>${item.price}</Text>
-                  </View>
-                </View>
+                <Item key={index}
+                  image={item.image}
+                  title={item.title}
+                  description={item.description}
+                  price={item.price}
+                  index={index}
+                  itemsLenght={items.length}
+                />
               )
             })
           }
 
         </ScrollView>
       </View>
+
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>Contactar</Text>
+      </TouchableOpacity>
 
     </View>
   )
@@ -98,33 +104,26 @@ const styles = StyleSheet.create({
     marginHorizontal: s(20),
     height: vs(255),
   },
-  itemContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: vs(15),
+  button: {
+    position: 'absolute',
+    bottom: vs(30),
+    backgroundColor: colors.primary,
+    left: s(70),
+    right: s(70),
+    paddingVertical: vs(5),
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    elevation: 6,
   },
-  itemImage: {
-    width: vs(60),
-    height: vs(60),
-    borderRadius: 3,
-    marginRight: s(15),
-  },
-  itemTitle: {
+  buttonText: {
+    color: "#FFF",
     fontFamily: 'GorditaMedium',
-    fontSize: vs(10),
-    marginBottom: vs(5),
-  },
-  itemDescription: {
-    fontFamily: 'GorditaRegular',
-    fontSize: vs(8),
-    lineHeight: vs(10),
-    width: s(210),
-    marginBottom: vs(5),
-  },
-  itemPrice: {
-    fontFamily: 'GorditaBold',
-    color: colors.primary,
-    fontSize: vs(11),
+    fontSize: vs(12),
+    textAlign: 'center',
   },
 })
