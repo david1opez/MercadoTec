@@ -7,10 +7,18 @@ import { useFonts } from 'expo-font';
 /* === SCREENS === */
 import Home from "./screens/Home";
 import ProductInfo from "./screens/ProductInfo";
+import Login from "./screens/Login";
+import RegisterUser from "./screens/RegisterUser";
+import RegisterProduct from "./screens/RegisterProduct";
+import RegisterItems from "./screens/RegisterItems"
 
 export type RootStackParamList = {
   Home: undefined;
   ProductInfo: {id: string};
+  Login: undefined;
+  RegisterUser: undefined;
+  RegisterProduct: undefined;
+  RegisterItems: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +39,10 @@ export default function App() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="ProductInfo" component={ProductInfo} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="RegisterUser" component={RegisterUser} />
+      <Stack.Screen name="RegisterProduct" component={RegisterProduct} />
+      <Stack.Screen name="RegisterItems" component={RegisterItems} />
     </Stack.Navigator>
   </NavigationContainer>
   );
