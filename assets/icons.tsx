@@ -13,6 +13,14 @@ const paths = {
         "M10.5 10.5V12.25C10.5 13.1783 10.1313 14.0685 9.47487 14.7249C8.8185 15.3813 7.92826 15.75 7 15.75C6.07174 15.75 5.1815 15.3813 4.52513 14.7249C3.86875 14.0685 3.5 13.1783 3.5 12.25V10.5",
         "M17.5 10.5V12.25C17.5 13.1783 17.1313 14.0685 16.4749 14.7249C15.8185 15.3813 14.9283 15.75 14 15.75C13.0717 15.75 12.1815 15.3813 11.5251 14.7249C10.8687 14.0685 10.5 13.1783 10.5 12.25V10.5",
         "M24.5 10.5V12.25C24.5 13.1783 24.1313 14.0685 23.4749 14.7249C22.8185 15.3813 21.9283 15.75 21 15.75C20.0717 15.75 19.1815 15.3813 18.5251 14.7249C17.8687 14.0685 17.5 13.1783 17.5 12.25V10.5"
+    ],
+    return: [
+        "M28.125 53.4375L11.25 36.5625L28.125 19.6875",
+        "M78.75 70.3125C78.75 61.3614 75.1942 52.777 68.8649 46.4476C62.5355 40.1183 53.9511 36.5625 45 36.5625H11.25"
+    ],
+    close: [
+        "M15 75L75 15",
+        "M75 75L15 15"
     ]
 };
 
@@ -42,6 +50,22 @@ export default function Icon ({name, width, height, color, style}: {name: string
                 <Rect x="21.6" width="5.4" height="25.2" fill={color}/>
                 <Rect x="10.8" width="5.4" height="25.2" fill={color}/>
                 <Rect width="5.4" height="25.2" fill={color}/>
+            </Svg>
+        )
+    }
+    else if (name == "return") {
+        return (
+            <Svg width={width} height={height} viewBox="0 0 90 90" style={style}>
+                <Path d={paths.return[0]} stroke={color} strokeWidth={9}/>
+                <Path d={paths.return[1]} stroke={color} strokeWidth={9}/>
+            </Svg>
+        )
+    }
+    else if (name = "close") {
+        return (
+            <Svg width={width} height={height} viewBox="0 0 90 90" style={style}>
+                <Path d={paths.close[0]} strokeWidth={12} stroke={color} />
+                <Path d={paths.close[1]} strokeWidth={12} stroke={color} />
             </Svg>
         )
     }
