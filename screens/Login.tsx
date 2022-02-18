@@ -26,7 +26,7 @@ const Login = () => {
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
 
-      <Text style={styles.title}>¿LISTO PARA VENDER MÁS?</Text>
+      <Text style={styles.title}>¿LISTO PARA{"\n"}VENDER MÁS?</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputPlaceholder}>Correo:</Text>
@@ -74,9 +74,8 @@ const styles = StyleSheet.create({
     fontSize: vs(32),
     fontFamily: "GorditaBold",
     color: "#FFF",
+    marginLeft: s(-25),
     lineHeight: vs(50),
-    width: s(345),
-    marginLeft: s(40),
     marginBottom: vs(40),
   },
   inputContainer: {
@@ -106,7 +105,7 @@ const styles = StyleSheet.create({
   },
   mainButtonText: {
     fontSize: vs(12),
-    fontFamily: "GorditaMedium",
+    fontFamily: "GorditaBold",
     color: colors.primary,
   },
   forgotPassword: {
