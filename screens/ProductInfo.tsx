@@ -52,7 +52,7 @@ const ProductInfo = ({route}: any) => {
         <Image source={{uri: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1"}} style={styles.mainImage}/>
         <View style={styles.darkenImage}/>
       </View>
-      
+
       <Text style={styles.title}>Ramos Tejidos</Text>
       <Text style={styles.description}>
         Amix, el día de mañana voy a llevar roles de canela con y sin pasas en $25 también 
@@ -64,7 +64,7 @@ const ProductInfo = ({route}: any) => {
       </Text>
 
       <View style={styles.scrollContainer}>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {
             items.map((item, index) => {
               return(
