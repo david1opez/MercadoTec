@@ -7,7 +7,7 @@ import{ colors } from "../StyleVariables";
 
 const Item = ({image, title, description, price, index, itemsLenght}:{image: string, title: string, description: string, price: number, index: number, itemsLenght: number}) => {
   return (
-    <View key={index} style={index == 0 ? [styles.itemContainer, {marginTop: vs(25)}] : index == itemsLenght - 1 ? [styles.itemContainer, {marginBottom: vs(70)}] : styles.itemContainer}>
+    <View key={index} style={index == 0 ? [styles.itemContainer, {marginTop: vs(25)}] : index == itemsLenght - 1 ? [styles.itemContainer, {marginBottom: vs(100)}] : styles.itemContainer}>
         <Image source={{uri: image}} style={styles.itemImage}/>
         
         <View>
