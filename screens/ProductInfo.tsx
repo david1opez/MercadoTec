@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Touchable } from 'react-native'
 import React from 'react'
 import {vs, s} from "react-native-size-matters";
+import {useNavigation} from '@react-navigation/native';
 
 import{ colors } from "../StyleVariables";
 
 // COMPONENTS
 import Item from '../components/Item';
+import Icon from '../assets/icons'
+
 
 const items = [
   {
@@ -35,12 +38,21 @@ const items = [
 ]
 
 const ProductInfo = ({route}: any) => {
+  const navigation = useNavigation();
+
   const id = route.params.id;
 
   return (
     <View>
-      <Image source={{uri: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1"}} style={styles.mainImage}/>
+      <TouchableOpacity style={styles.returnIcon} onPress={() => {navigation.goBack()}}>
+        <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
+      </TouchableOpacity>
 
+      <View>
+        <Image source={{uri: "https://scontent.fgdl3-1.fna.fbcdn.net/v/t39.30808-6/273562759_5101563959930019_8995591478857708838_n.jpg?stp=dst-jpg_p843x403&_nc_cat=106&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeHU4QW_x0GuUWJoB4I3srtPADLXD6C70SIAMtcPoLvRIvjD5nYSwhIqGZ0GfbOo_CY6EMDiG8QBZV3mWY9IEDIQ&_nc_ohc=V8fOZXlqE84AX82FZ13&_nc_ht=scontent.fgdl3-1.fna&oh=00_AT_jo_4qs_xTDRuXG4zMF5P1-Hi0jL--5b6g98fQeyFsgQ&oe=6211A0E1"}} style={styles.mainImage}/>
+        <View style={styles.darkenImage}/>
+      </View>
+      
       <Text style={styles.title}>Ramos Tejidos</Text>
       <Text style={styles.description}>
         Amix, el día de mañana voy a llevar roles de canela con y sin pasas en $25 también 
@@ -82,10 +94,27 @@ const ProductInfo = ({route}: any) => {
 export default ProductInfo
 
 const styles = StyleSheet.create({
+  returnIcon: {
+    width: vs(26),
+    height: vs(26),
+    position: 'absolute',
+    top: vs(35),
+    right: s(15),
+    zIndex: 1,
+  },
   mainImage: {
     width: '100%',
-    height: vs(300),
+    height: vs(250),
     marginBottom: vs(15),
+  },
+  darkenImage: {
+    width: '100%',
+    height: vs(250),
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 0,
   },
   title: {
     fontFamily: 'GorditaBold',
@@ -102,7 +131,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     marginHorizontal: s(20),
-    height: vs(255),
+    height: vs(305),
   },
   button: {
     position: 'absolute',
