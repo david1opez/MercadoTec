@@ -26,7 +26,10 @@ const Post = ({title, description, image, id}: {title: string, description: stri
         <Text style={styles.description}>{description}</Text>
       </View>
 
-      <Image style={styles.image} source={{uri: image}} />
+      <View>
+        <Image style={styles.image} source={{uri: image}} />
+        <View style={styles.darkenImage} />
+      </View>
     </TouchableOpacity>
   )
 }
@@ -62,5 +65,12 @@ const styles = StyleSheet.create({
     width: vs(65),
     height: vs(50),
     borderRadius: 3,
+  },
+  darkenImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: "rgba(0,0,0,0.6)",
+    opacity: 0.3,
   },
 })
