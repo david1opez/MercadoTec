@@ -17,8 +17,22 @@ export type RootStackParamList = {
   ProductInfo: {id: string};
   Login: undefined;
   RegisterUser: undefined;
-  RegisterProduct: undefined;
-  RegisterItems: undefined;
+  RegisterProduct: {
+    name: string,
+    email: string,
+    password: string
+  };
+  RegisterItems: {
+    name: string,
+    email: string,
+    password: string,
+    product: {
+      title: string,
+      description: string,
+      image: string
+    },
+    items: [] | undefined;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
