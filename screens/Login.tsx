@@ -12,10 +12,10 @@ import Icon from '../assets/icons'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
-type RegisterUserScreenProp = StackNavigationProp<RootStackParamList, 'RegisterUser'>;
+type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 const Login = () => {
-  const navigation = useNavigation<RegisterUserScreenProp>();
+  const navigation = useNavigation<LoginScreenProp>();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
