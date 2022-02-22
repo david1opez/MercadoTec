@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-nativ
 import React, {useState} from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
 
 import { colors } from '../StyleVariables'
 
@@ -17,9 +19,81 @@ type RegisterUserScreenProp = StackNavigationProp<RootStackParamList, 'RegisterU
 const RegisterUser = () => {
   const navigation = useNavigation<RegisterUserScreenProp>();
 
+  const auth = getAuth();
+  const db = getFirestore();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [contactOption, setContactOption] = useState('Whatsapp');
+  const [contact, setContact] = useState('');
+
+  const validate = () => {
+    if (name.length == 0 || email.length == 0 || password.length == 0) {
+      alert('Parece que dejaste algunos campos vacíos');
+      return false;
+    }
+    else if (!email.includes('@')) {
+      alert('El correo es inválido, porfavor comprueba que esté bien escrito');
+      return false;
+    }
+    else if (!email.includes('.')) {
+      alert('El correo es inválido, porfavor comprueba que esté bien escrito');
+      return false;
+    }
+    else if (email.length < 5) {
+      alert('El correo es inválido, porfavor comprueba que esté bien escrito');
+      return false;
+    }
+    else if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+    else if(contact.length == 0) {
+      alert('Por favor ingresa un modo para que tus clientes te puedan contactar');
+      return false;
+    }
+    else if(contactOption == 'Whatsapp' && contact.length != 12) {
+      alert('El numero de whatsapp debe tener 12 dígitos, empezando con el codigo de país (52)');
+      return false;
+    }
+    else {
+      return (
+        createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          const uid: any = auth.currentUser?.uid;
+
+          let link: string;
+
+          if(contactOption == 'Whatsapp') {
+            link = `https://wa.me/${contact}`;
+          }
+          else if(contactOption == 'Telegram') {
+            link = `https://telegram.me/${contact}`;
+          }
+          else if(contactOption == 'Messenger') {
+            link = `https://m.me/${contact}`;
+          }
+
+          setDoc(doc(db, "Users", uid), {
+            name: name,
+          })
+          .then(() => {navigation.replace('RegisterProduct', {link: link})})
+          .catch((error) => {alert(error.message)})
+        })
+        .catch((error) => {
+        if(error.message === 'Firebase: Error (auth/email-already-in-use)') {
+          alert('El correo ya está en uso');
+        }
+        else {
+          alert(error.message);
+        }
+        return false;
+        })
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -27,25 +101,60 @@ const RegisterUser = () => {
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
 
-      <Text style={styles.title}>MORE INFO{"\n"}LESS & DOWN</Text>
-      <Text style={styles.description}>If you want to check it out, I feel compelled to warn you that it's not the most well-documented tool, and has many other people around</Text>
+      <Text style={styles.title}>ÚNETE A{"\n"}MERCADOTEC</Text>
+      <Text style={styles.description}>Ya no utilices Facebook para vender en el campus. Nostros te ayudamos a tener un público más enfocado para ayudarte a vender más</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputPlaceholder}>Nombre:</Text>
+        <Text style={styles.inputLabel}>Nombre:</Text>
         <TextInput style={styles.input} onChangeText={(value) => {setName(value)}} value={name}/>
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputPlaceholder}>Correo:</Text>
-        <TextInput style={styles.input} onChangeText={(value) => {setEmail(value)}} value={email}/>
+        <Text style={styles.inputLabel}>Correo:</Text>
+        <TextInput style={styles.input} onChangeText={(value) => {
+          setEmail(value.replace(/\s/g, ''))
+        }} value={email} autoCapitalize={"none"}/>
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputPlaceholder}>Contraseña:</Text>
-        <TextInput style={styles.input} onChangeText={(value) => {setPassword(value)}} value={password}/>
+        <Text style={styles.inputLabel}>Contraseña:</Text>
+        <TextInput style={styles.input} onChangeText={(value) => {setPassword(value)}} value={password} autoCapitalize={"none"} secureTextEntry={true}/>
       </View>
 
-      <TouchableOpacity style={styles.mainButton}>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabel}>Modo de contacto:</Text>
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity 
+            style={contactOption != 'Whatsapp' ? styles.contactOption : styles.activeContactOption}
+            onPress={() => {setContactOption('Whatsapp')}}
+          >
+            <Text style={contactOption != 'Whatsapp' ? styles.contactOptionText : styles.activeContactOptionText}>Whatsapp</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={contactOption != 'Telegram' ? styles.contactOption : styles.activeContactOption}
+            onPress={() => {setContactOption('Telegram')}}
+          >
+            <Text style={contactOption != 'Telegram' ? styles.contactOptionText : styles.activeContactOptionText}>Telegram</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={contactOption != 'Messenger' ? styles.contactOption : styles.activeContactOption}
+            onPress={() => {setContactOption('Messenger')}}
+          >
+            <Text style={contactOption != 'Messenger' ? styles.contactOptionText : styles.activeContactOptionText}>Messenger</Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          style={styles.input} onChangeText={(value) => {setContact(value)}}
+          autoCapitalize={"none"}
+          placeholder={contactOption == 'Whatsapp' ? 'Teléfono ej. 528441234567' : contactOption == 'Telegram' ? 'Nombre de usuario' : 'Nombre de usuario'}
+          placeholderTextColor={"rgba(255, 255, 255, 0.5)"}
+          keyboardType={contactOption == 'Whatsapp' ? 'numeric' : 'default'}
+        />
+      </View>
+
+      <TouchableOpacity style={styles.mainButton}
+        onPress={() => {validate()}}
+      >
         <Text style={styles.mainButtonText}>Registrarse</Text>
       </TouchableOpacity>
 
@@ -94,14 +203,14 @@ const styles = StyleSheet.create({
     width: s(345),
     marginLeft: s(40),
     paddingRight: s(55),
-    marginBottom: vs(40),
+    marginBottom: vs(30),
   },
   inputContainer: {
     alignItems: 'flex-start',
     marginBottom: vs(20),
     marginRight: s(30),
   },
-  inputPlaceholder: {
+  inputLabel: {
     fontSize: vs(10),
     fontFamily: "GorditaMedium",
     color: "#FFF",
@@ -111,10 +220,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#FFF",
     fontFamily: "GorditaRegular",
-    color: "#000",
+    color: "#FFF",
   },
   mainButton: {
-    marginTop: vs(30),
+    marginTop: vs(25),
     backgroundColor: "#FFF",
     paddingHorizontal: s(50),
     paddingVertical: vs(5),
@@ -141,5 +250,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: vs(12),
   },
+  optionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: s(270),
+    marginTop: vs(5),
+    marginBottom: vs(10),
+  },
+  contactOption: {
+    backgroundColor: "#FFF",
+    paddingHorizontal: s(10),
+    borderRadius: 3,
+    paddingVertical: vs(2),
+  },
+  contactOptionText: {
+    fontSize: vs(10),
+    fontFamily: "GorditaMedium",
+    color: colors.primary,
+  },
+  activeContactOption: {
+    paddingHorizontal: s(10),
+    borderWidth: 2,
+    borderColor: "#FFF",
+    borderRadius: 3,
+    paddingVertical: vs(2),
+  },
+  activeContactOptionText: {
+    fontSize: vs(10),
+    fontFamily: "GorditaMedium",
+    color: "#FFF",
+  }
 
 })

@@ -10,34 +10,24 @@ import ProductInfo from "./screens/ProductInfo";
 import Login from "./screens/Login";
 import RegisterUser from "./screens/RegisterUser";
 import RegisterProduct from "./screens/RegisterProduct";
-import RegisterItems from "./screens/RegisterItems"
+import RegisterItems from "./screens/RegisterItems";
+import EditProduct from "./screens/EditProduct";
+import PromotePost from './screens/PromotePost';
 
 export type RootStackParamList = {
   Home: undefined;
   ProductInfo: {id: string};
   Login: undefined;
   RegisterUser: undefined;
-  RegisterProduct: {
-    name: string,
-    email: string,
-    password: string
-  };
-  RegisterItems: {
-    name: string,
-    email: string,
-    password: string,
-    product: {
-      title: string,
-      description: string,
-      image: string
-    },
-    items: [] | undefined;
-  };
+  RegisterProduct: {link: string};
+  RegisterItems: undefined,
+  EditProduct: undefined,
+  PromotePost: undefined
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function App() {
+export default function App() {  
   let [fontsLoaded] = useFonts({
     GorditaRegular: require('./assets/fonts/GorditaRegular.otf'),
     GorditaMedium: require('./assets/fonts/GorditaMedium.otf'),
@@ -57,6 +47,8 @@ export default function App() {
       <Stack.Screen name="RegisterUser" component={RegisterUser} />
       <Stack.Screen name="RegisterProduct" component={RegisterProduct} />
       <Stack.Screen name="RegisterItems" component={RegisterItems} />
+      <Stack.Screen name="EditProduct" component={EditProduct} />
+      <Stack.Screen name="PromotePost" component={PromotePost} />
     </Stack.Navigator>
   </NavigationContainer>
   );

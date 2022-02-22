@@ -1,10 +1,8 @@
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import Svg, { Path, Rect } from "react-native-svg";
-import Icon from "../assets/icons";
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import {vs, s} from "react-native-size-matters";
-
 import{ colors } from "../StyleVariables";
+import { doc, onSnapshot, getFirestore, getDoc } from 'firebase/firestore'
 
 // COMPONENTS
 import Navbar from "../components/Navbar";
@@ -13,113 +11,77 @@ import FeaturedPost from '../components/FeaturedPost';
 import Category from '../components/Category';
 
 
-type Post = {
-  id: number,
-  title: string,
-  description: string,
-  image: string,
-}
-
-type FeaturedPost = {
-  id: number,
-  title: string,
-  seller: string,
-  image: string,
-}
-
-const posts: Post[] = [
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    description: 'Qué onda chavos!!! Si aún no tienen su regalito, hoy llevaré paletas de chocolate Hershey con distintos diseños en $20️ estoy d...',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-];
-const featuredPosts: FeaturedPost[] = [
-  {
-    id: 1,
-    title: 'Paletas de chocolate Hershey',
-    seller: 'Abraham Licona',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 2,
-    title: 'Paletas de chocolate Hershey',
-    seller: 'Abraham Licona',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 3,
-    title: 'Paletas de chocolate Hershey',
-    seller: 'Abraham Licona',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 4,
-    title: 'Paletas de chocolate Hershey',
-    seller: 'Abraham Licona',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-  {
-    id: 5,
-    title: 'Paletas de chocolate Hershey',
-    seller: 'Abraham Licona',
-    image: 'https://scontent.fgdl10-1.fna.fbcdn.net/v/t39.30808-6/p720x720/273988752_4799358050151232_2951886400619287815_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=5cd70e&_nc_eui2=AeFN19E_M2O7UBqM3Mxiw7RIf_WCfT_pbKV_9YJ9P-lspdSbyGg4yP0MUxklUGxeoillZ_ql9H0kDMFb1F06he6T&_nc_ohc=9MxFFenXNNMAX9ja2gl&_nc_ht=scontent.fgdl10-1.fna&oh=00_AT9R4xMUojA0YeoSVtcu-OW-uXig_pPf-NqIA8iQy2nP3A&oe=621084E6',
-  },
-];
-
 const categories: string[] = [
   "Cerca de ti",
   "Comida",
   "Regalos",
   "Ropa",
   "Higiene",
+  "Miscelaneos"
 ];
 
 const Home = () => {
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+
+  const db = getFirestore();
+
+  const [products, setProducts] = useState([]);
+  const [promotedPosts, setPromotedPosts] = useState<any>([]);
+
+  const [allProducts, setAllProducts] = useState<any>({});
+
+  const GetPromotedPosts = async () => {
+    let docSnap = await getDoc(doc(db, "Products", "Promoted"));
+
+    if(!docSnap.exists()) return;
+
+    let data = docSnap.data();
+    setPromotedPosts(data.Posts);
+  }
+
+  const GetProducts = async () => {
+    let docSnap = await getDoc(doc(db, "Products", "Preview"));
+
+    if(!docSnap.exists()) return;
+    setAllProducts(docSnap.data());
+  }
+
+  useEffect(() => {
+    GetPromotedPosts();
+    GetProducts();
+  }, [])
+
+  useEffect(() => {
+    const dbCategories = [
+      "Todos",
+      "Comida",
+      "Regalos",
+      "Ropa",
+      "Higiene",
+      "Miscelaneos"
+    ]
+
+    if(!allProducts) return;
+    setProducts(allProducts[dbCategories[activeCategoryIndex]]);
+
+  }, [allProducts]);
+
+  useEffect(() => {
+    const dbCategories = [
+      "Todos",
+      "Comida",
+      "Regalos",
+      "Ropa",
+      "Higiene",
+      "Miscelaneos"
+    ]
+
+    if(!products) return;
+    setProducts(allProducts[dbCategories[activeCategoryIndex]]);
+
+  }, [activeCategoryIndex]);
+
+
 
   return (
     <View style={styles.container}>
@@ -129,7 +91,7 @@ const Home = () => {
       {/* Featured */}
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.featuredPostsContainer}>
         {
-          featuredPosts.map((post: any, index: number) => {
+          promotedPosts.map((post: any, index: number) => {
             return (
               <FeaturedPost key={index} index={index}
                 title={post.title}
@@ -164,16 +126,18 @@ const Home = () => {
       <View style={styles.postsContainer}>
         <ScrollView>
           {
-            posts.map((post: any, index: number) => {
-              return (
-                <Post key={index}
-                  title={post.title}
-                  description={post.description}
-                  image={post.image}
-                  id={post.id}
-                />
-              )
-            })
+            products && (
+              products.map((post: any, index: number) => {
+                return (
+                  <Post key={index}
+                    title={post.title}
+                    description={post.description}
+                    image={post.image}
+                    id={post.id}
+                  />
+                )
+              })
+            )
           }
         </ScrollView>
       </View>

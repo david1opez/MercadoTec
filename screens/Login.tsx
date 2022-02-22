@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard } from 'react-native'
 import React, {useState} from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
-
 import { colors } from '../StyleVariables'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 // COMPONENTS
 import Icon from '../assets/icons'
@@ -17,8 +17,35 @@ type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 const Login = () => {
   const navigation = useNavigation<LoginScreenProp>();
 
+  const auth = getAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const LoginWithEmail = async function (email: string, password: string) {
+    if(email.length === 0 || password.length === 0) return;
+
+    Keyboard.dismiss();
+    
+    signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+        navigation.replace("EditProduct");
+    })
+    .catch((error) => {
+        if (error.message == "Firebase: Error (auth/user-not-found).") {
+          alert("Usuario no encontrado");
+        }
+        else if(error.message == "Firebase: Error (auth/invalid-email).") {
+          alert("Correo inválido");
+        }
+        else if (error.message == "Firebase: Error (auth/wrong-password).") {
+          alert("Contraseña incorrecta");
+        }
+        else {
+          alert(error.message);
+        }
+    });
+  }
 
   return (
     <View style={styles.container}>
@@ -29,16 +56,18 @@ const Login = () => {
       <Text style={styles.title}>¿LISTO PARA{"\n"}VENDER MÁS?</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputPlaceholder}>Correo:</Text>
-        <TextInput style={styles.input} onChangeText={(value) => setEmail(value)} value={email} autoCapitalize={"none"}/>
+        <Text style={styles.inputLabel}>Correo:</Text>
+        <TextInput style={styles.input} onChangeText={(value) => setEmail(value.replace(/\s/g, ''))} value={email} autoCapitalize={"none"}/>
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputPlaceholder}>Contraseña:</Text>
+        <Text style={styles.inputLabel}>Contraseña:</Text>
         <TextInput style={styles.input} onChangeText={(value) => {setPassword(value)}} value={password} autoCapitalize={"none"} secureTextEntry={true}/>
       </View>
 
-      <TouchableOpacity style={styles.mainButton}>
+      <TouchableOpacity style={styles.mainButton}
+        onPress={() => LoginWithEmail(email, password)}
+      >
         <Text style={styles.mainButtonText}>Iniciar sesión</Text>
       </TouchableOpacity>
 
@@ -83,7 +112,7 @@ const styles = StyleSheet.create({
     marginBottom: vs(20),
     marginRight: s(20),
   },
-  inputPlaceholder: {
+  inputLabel: {
     fontSize: vs(10),
     fontFamily: "GorditaMedium",
     color: "#FFF",

@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {vs, s} from "react-native-size-matters";
 import Icon from "../assets/icons";
-import Svg, { Path, Rect } from "react-native-svg";
 import {useNavigation} from '@react-navigation/native';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import {initializeApp} from 'firebase/app';
+import Constants from 'expo-constants';
 
 import{ colors } from "../StyleVariables";
 
@@ -13,9 +15,36 @@ import { RootStackParamList } from '../App';
 
 type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
+// FIREBASE
+const firebaseConfig = {
+  apiKey: Constants?.manifest?.extra?.APIKEY,
+  authDomain: Constants?.manifest?.extra?.AUTHDOMAIN,
+  projectId: Constants?.manifest?.extra?.PROJECTID,
+  storageBucket: Constants?.manifest?.extra?.STORAGEBUCKET,
+  messagingSenderId: Constants?.manifest?.extra?.MESSAGINGSENDERID,
+  appId: Constants?.manifest?.extra?.APPID,
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+
 
 const Navbar = () => {
   const navigation = useNavigation<LoginScreenProp>();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if(firebaseApp) checkAuthentication();
+  }, [firebaseApp]);
+
+  const checkAuthentication = () => {
+    const auth = getAuth(); // This is for using Firebase authentication
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) { setIsLoggedIn(true) }
+      else { setIsLoggedIn(false) }
+    });
+  }
 
   return (
     <View style={styles.navbarContainer}>
@@ -43,7 +72,10 @@ const Navbar = () => {
           
           {/* Seller Button */}
           <TouchableOpacity style={styles.sellerButton}
-            onPress={() => {navigation.navigate("Login")}}
+            onPress={() => {
+              if(isLoggedIn) {navigation.navigate("EditProduct")}
+              else {navigation.navigate("Login")}
+            }}
           >
             <Icon name="store" width={vs(20)} height={vs(20)} color={colors.primary}/>
           </TouchableOpacity>
