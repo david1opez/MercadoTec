@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Keyboard } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {vs, s} from "react-native-size-matters";
 import{ colors } from "../StyleVariables";
@@ -27,6 +27,9 @@ const Home = () => {
 
   const [products, setProducts] = useState([]);
   const [promotedPosts, setPromotedPosts] = useState<any>([]);
+
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchBarvalue, setSearchValue] = useState("");
 
   const [allProducts, setAllProducts] = useState<any>({});
 
@@ -86,61 +89,103 @@ const Home = () => {
   return (
     <View style={styles.container}>
 
-      <Navbar />
+      <Navbar
+        onChangeValue={(text: string) => {
+          if(text == "" || text == " ") {
+            setIsSearching(false);
+            return;
+          };
+          setIsSearching(true);
+          setSearchValue(text);
+        }}
+        onReturnToHome={() => {
+          setIsSearching(false);
+          setSearchValue("");
+          Keyboard.dismiss();
+        }}
+      />
 
-      {/* Featured */}
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.featuredPostsContainer}>
-        {
-          promotedPosts.map((post: any, index: number) => {
-            return (
-              <FeaturedPost key={index} index={index}
-                title={post.title}
-                seller={post.seller}
-                image={post.image}
-                id={post.id}
-              />
-            )
-          })
-        }
-      </ScrollView>
+      {
+        isSearching ? (
+          <View style={styles.searchResultsContainer}>
+            <Text style={styles.searchResultsTitle}>Resultados de la búsqueda</Text>
+            <ScrollView>
+              {
+                // Search in the allProducts.Todos array the ones that match the searchBarvalue, if there's nothing found return a text
+                allProducts.Todos.filter((product: any) => {
+                  return product?.title.toLowerCase().replace(/\s/g, '').includes(searchBarvalue.toLowerCase().replace(/\s/g, ''));
+                }).map((product: any, index: number) => {
+                  return (
+                    <Post
+                      key={index}
+                      title={product.title}
+                      description={product.description}
+                      image={product.image}
+                      id={product.id}
+                    />
+                  )
+                })
+              }
+            </ScrollView>
+          </View>
+        ) : (
+          <View>
+            {/* Featured */}
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.featuredPostsContainer}>
+              {
+                promotedPosts.map((post: any, index: number) => {
+                  return (
+                    <FeaturedPost key={index} index={index}
+                      title={post.title}
+                      seller={post.seller}
+                      image={post.image}
+                      id={post.id}
+                    />
+                  )
+                })
+              }
+            </ScrollView>
 
-      {/* Categories */}
-      <Text style={styles.categoriesTitle}>Categorías :</Text>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
-        {
-          categories.map((category: string, index: number) => {
-            return (
-              <Category
-                key={index}
-                name={category}
-                index={index}
-                activeCategoryIndex={activeCategoryIndex}
-                returnIndex={(index: number) => {setActiveCategoryIndex(index)}}
-              />
-            )
-          })
-        }
-      </ScrollView>
+            {/* Categories */}
+            <Text style={styles.categoriesTitle}>Categorías :</Text>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+              {
+                categories.map((category: string, index: number) => {
+                  return (
+                    <Category
+                      key={index}
+                      name={category}
+                      index={index}
+                      activeCategoryIndex={activeCategoryIndex}
+                      returnIndex={(index: number) => {setActiveCategoryIndex(index)}}
+                    />
+                  )
+                })
+              }
+            </ScrollView>
 
-      {/* Posts */}
-      <View style={styles.postsContainer}>
-        <ScrollView>
-          {
-            products && (
-              products.map((post: any, index: number) => {
-                return (
-                  <Post key={index}
-                    title={post.title}
-                    description={post.description}
-                    image={post.image}
-                    id={post.id}
-                  />
-                )
-              })
-            )
-          }
-        </ScrollView>
-      </View>
+            {/* Posts */}
+            <View style={styles.postsContainer}>
+              <ScrollView>
+                {
+                  products && (
+                    products.map((post: any, index: number) => {
+                      return (
+                        <Post key={index}
+                          title={post.title}
+                          description={post.description}
+                          image={post.image}
+                          id={post.id}
+                        />
+                      )
+                    })
+                  )
+                }
+              </ScrollView>
+            </View>
+          </View>
+        )
+      }
 
     </View>
   )
@@ -170,4 +215,14 @@ const styles = StyleSheet.create({
     marginHorizontal: s(16),
     height: vs(360),
   },
+  searchResultsContainer: {
+    marginHorizontal: s(16),
+  },
+  searchResultsTitle: {
+    fontFamily: "GorditaMedium",
+    fontSize: s(9),
+    marginBottom: vs(10),
+    color: colors.primary,
+    textDecorationLine: 'underline',
+  }
 })

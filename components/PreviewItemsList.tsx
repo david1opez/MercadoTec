@@ -26,7 +26,7 @@ const PreviewItemsList = ({items, onDelete}: {items: Items, onDelete: Function})
               description={item.description}
               image={item.image}
               price={item.price}
-              removeItem={(index: number) => onDelete(index)}
+              onRemoveItem={(index: number) => onDelete(index)}
             />
           )
         })

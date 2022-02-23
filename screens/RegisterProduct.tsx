@@ -209,7 +209,10 @@ const RegisterProduct = ({route}: any) => {
       </View>
 
       <TouchableOpacity style={styles.mainButton}
-        onPress={() => {validate();}}
+        onPress={() => {
+          if(isLoading) return;
+          validate()
+        }}
       >
         {
           isLoading ? (

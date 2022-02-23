@@ -28,7 +28,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 
-const Navbar = () => {
+const Navbar = ({onChangeValue, onReturnToHome}: {onChangeValue: Function, onReturnToHome: Function}) => {
   const navigation = useNavigation<LoginScreenProp>();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,7 +50,9 @@ const Navbar = () => {
     <View style={styles.navbarContainer}>
 
         {/* Logo */}
-        <View style={styles.logoContainer}>
+        <TouchableOpacity style={styles.logoContainer}
+          onPress={() => onReturnToHome()}
+        >
 
           <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
           
@@ -59,7 +61,7 @@ const Navbar = () => {
             <Text style={styles.BottomLogoText}>Tec</Text>
           </View>
 
-        </View>
+        </TouchableOpacity>
 
         {/* Left column (Searchbar & Seller button)*/}
         <View style={styles.leftNavbarContainer}>
@@ -67,7 +69,11 @@ const Navbar = () => {
           {/* Searchbar */}
           <View style={styles.searchbarContainer}>
             <Icon name="search" width={vs(15)} height={vs(15)} color={colors.primary} style={styles.searchButton}/>
-            <TextInput placeholder={"Buscar..."} style={styles.searchbar}/>
+            <TextInput
+              placeholder={"Buscar..."}
+              style={styles.searchbar}
+              onChangeText={(text) => {onChangeValue(text)}}
+            />
           </View>
           
           {/* Seller Button */}

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
 import React, {useState} from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
@@ -22,6 +22,8 @@ const RegisterUser = () => {
   const auth = getAuth();
   const db = getFirestore();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +32,8 @@ const RegisterUser = () => {
   const [contact, setContact] = useState('');
 
   const validate = () => {
+    setIsLoading(true);
+    
     if (name.length == 0 || email.length == 0 || password.length == 0) {
       alert('Parece que dejaste algunos campos vacíos');
       return false;
@@ -62,6 +66,8 @@ const RegisterUser = () => {
       return (
         createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
+          setIsLoading(true);
+
           const uid: any = auth.currentUser?.uid;
 
           let link: string;
@@ -79,7 +85,10 @@ const RegisterUser = () => {
           setDoc(doc(db, "Users", uid), {
             name: name,
           })
-          .then(() => {navigation.replace('RegisterProduct', {link: link})})
+          .then(() => {
+            setIsLoading(false);
+            navigation.replace('RegisterProduct', {link: link})
+          })
           .catch((error) => {alert(error.message)})
         })
         .catch((error) => {
@@ -93,6 +102,8 @@ const RegisterUser = () => {
         })
       );
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -102,7 +113,7 @@ const RegisterUser = () => {
       </TouchableOpacity>
 
       <Text style={styles.title}>ÚNETE A{"\n"}MERCADOTEC</Text>
-      <Text style={styles.description}>Ya no utilices Facebook para vender en el campus. Nostros te ayudamos a tener un público más enfocado para ayudarte a vender más</Text>
+      <Text style={styles.description}>Ya no utilices Facebook para vender en el campus. Nostros te ayudamos a tener un público más enfocado para que puedas vender más</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Nombre:</Text>
@@ -153,9 +164,18 @@ const RegisterUser = () => {
       </View>
 
       <TouchableOpacity style={styles.mainButton}
-        onPress={() => {validate()}}
+        onPress={() => {
+          if(isLoading) return;
+          validate()
+        }}
       >
-        <Text style={styles.mainButtonText}>Registrarse</Text>
+        {
+          isLoading ? (
+            <ActivityIndicator size={"large"} color={"#FFF"}/>
+          ) : (
+            <Text style={styles.mainButtonText}>Registrarse</Text>
+          )
+        }
       </TouchableOpacity>
 
       <TouchableOpacity>

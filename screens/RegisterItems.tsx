@@ -61,7 +61,7 @@ const RegisterItems = () => {
   }
 
   const removeItem = (index: number) => {
-    setItems(items.filter((item, i) => i !== index));
+    setItems(items.filter((_, i) => i !== index));
   }
 
   const validate = () => {

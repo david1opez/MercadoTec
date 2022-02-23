@@ -20,7 +20,10 @@ const FeaturedPost = ({index, title, seller, image, id}: {index: number, title: 
       onPress={() => {navigation.navigate("ProductInfo", {id: id})}}
     >
 
+    <View>
       <Image style={styles.image} source={{uri: image}} />
+      <View style={styles.darkenImage} />
+    </View>
       
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
@@ -42,6 +45,16 @@ const styles = StyleSheet.create({
     height: vs(130),
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
+  },
+  darkenImage: {
+    width: s(270),
+    height: vs(130),
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   textContainer: {
     backgroundColor: colors.primary,

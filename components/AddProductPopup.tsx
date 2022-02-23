@@ -113,7 +113,7 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
                         .then(() => {
                         getDownloadURL(storageRef)
                         .then((url) => {
-                            onAddProduct(title, description, url, price);
+                            onAddProduct(title, description, url, price)
                         })
                         .catch((error) => {
                             alert(error.message);

@@ -4,7 +4,7 @@ import {vs, s} from "react-native-size-matters";
 
 import {colors} from "../StyleVariables";
 
-const ItemPreview = ({index, title, description, image, price, removeItem}: {index: number, title: string, description: string, price: number, image: string, removeItem: Function}) => {
+const ItemPreview = ({index, title, description, image, price, onRemoveItem}: {index: number, title: string, description: string, price: number, image: string, onRemoveItem: Function}) => {
   return (
     <View style={styles.container}>
 
@@ -22,7 +22,7 @@ const ItemPreview = ({index, title, description, image, price, removeItem}: {ind
       </View>
 
       <TouchableOpacity style={styles.deleteIcon}
-        onPress={() => removeItem(index)}
+        onPress={() => onRemoveItem(index)}
       >
         <Text style={styles.deleteIconText}>_</Text>
       </TouchableOpacity>

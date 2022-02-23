@@ -3,6 +3,7 @@ import AppLoading from 'expo-app-loading';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
+import { LogBox } from 'react-native';
 
 /* === SCREENS === */
 import Home from "./screens/Home";
@@ -26,6 +27,10 @@ export type RootStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// Ignore warnings
+LogBox.ignoreAllLogs();
+
 
 export default function App() {  
   let [fontsLoaded] = useFonts({
