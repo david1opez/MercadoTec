@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Keyboard } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Validate from '../hooks/Validate';
+import * as Permissions from 'expo-permissions';
+import * as Notification from 'expo-notifications';
 
 import { colors, templates } from '../StyleVariables'
 
@@ -41,6 +43,19 @@ const RegisterUser = () => {
   const [contactOption, setContactOption] = useState('Whatsapp');
   const [contact, setContact] = useState('');
 
+  const getExpoNotificationToken = async () => {
+    const {status} = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    if(status !== 'granted') {
+      await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    }
+    if(status != 'granted') {
+      return;
+    }
+
+    const token = (await Notification.getExpoPushTokenAsync()).data;
+    return token;
+  }
+
   const registerUser = async () => {
     createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
@@ -58,8 +73,18 @@ const RegisterUser = () => {
 
       AsyncStorage.setItem('@link', link)
       .then(() => {
-        setDoc(doc(db, "Users", uid), {
-          name: name.trim(),
+        getExpoNotificationToken().then((token) => {
+          if(token) {
+            setDoc(doc(db, "Users", uid), {
+              name: name.trim(),
+              notificationToken: token,
+            })
+          }
+          else {
+            setDoc(doc(db, "Users", uid), {
+              name: name.trim(),
+            })
+          }
         })
         .then(() => {
           setIsLoading(false);

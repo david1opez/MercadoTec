@@ -26,6 +26,10 @@ export default {
       },
       package: "com.david1opez.mercadotec",
     },
+    notification: {
+      icon: './assets/icon.png',
+      color: '#C92744',
+    },
     extra: {
       APIKEY: process.env.APIKEY,
       AUTHDOMAIN: process.env.AUTHDOMAIN,

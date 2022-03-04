@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import { LogBox } from 'react-native';
 import {initializeApp} from 'firebase/app';
 import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
 
 /* === SCREENS === */
 import Home from "./screens/Home";
@@ -55,6 +56,16 @@ export default function App() {
     setFirebaseLoaded(true);
   }, [firebaseApp]);
 
+  const notificationsPermission = async () => {
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+      await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    }
+  };
+
+  useEffect(() => {
+    notificationsPermission();
+  })
 
   let [fontsLoaded] = useFonts({
     GorditaRegular: require('./assets/fonts/GorditaRegular.otf'),
