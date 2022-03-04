@@ -21,7 +21,12 @@ const paths = {
     close: [
         "M15 75L75 15",
         "M75 75L15 15"
-    ]
+    ],
+    eye: [
+        "M45 20C17 20 6 45 6 45s11 25 39 25 39-25 39-25-11-25-39-25Z",
+        "M45 56a11 11 0 1 0 0-22 11 11 0 0 0 0 22Z"
+    ],
+    closedEye: "m17 14 56 62M26 24C12 31 6 45 6 45a44 44 0 0 0 58 21m11-8c7-7 9-13 9-13S73 20 45 20h-4",
 };
 
 export default function Icon ({name, width, height, color, style}: {name: string, width: number, height: number, color: string, style?: any}) {
@@ -61,11 +66,26 @@ export default function Icon ({name, width, height, color, style}: {name: string
             </Svg>
         )
     }
-    else if (name = "close") {
+    else if (name == "close") {
         return (
             <Svg width={width} height={height} viewBox="0 0 90 90" style={style}>
                 <Path d={paths.close[0]} strokeWidth={12} stroke={color} />
                 <Path d={paths.close[1]} strokeWidth={12} stroke={color} />
+            </Svg>
+        )
+    }
+    else if (name == "eye") {
+        return (
+            <Svg width={width} height={height} viewBox="0 0 90 90" style={style}>
+                <Path d={paths.eye[0]} strokeWidth={7} stroke={color} />
+                <Path d={paths.eye[1]} strokeWidth={7} stroke={color} />
+            </Svg>
+        )
+    }
+    else if (name == "closedEye") {
+        return (
+            <Svg width={width} height={height} viewBox="0 0 90 90" style={style}>
+                <Path d={paths.closedEye} strokeWidth={7} stroke={color} />
             </Svg>
         )
     }

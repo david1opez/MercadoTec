@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import React, {useState} from 'react'
 import SelectImage from '../hooks/SelectImage';
 import {vs, s} from 'react-native-size-matters';
@@ -17,20 +17,26 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
     const [image, setImage] = useState<any>('');
     const [price, setPrice] = useState(0);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
 
     const validate = () => {
+        setIsLoading(true);
+
         if(title.length == 0) {
             alert('Porfavor escribe un título para describir tu producto');
+            setIsLoading(false);
             return false;
         }
         else if(description.length == 0) {
-            alert('Porfavor escribe la descripción de tu producto');
-            return false;
+            setDescription(" ");
+            return true;
         }
         else if(image.length == 0) {
             alert('Porfavor selecciona una imagen para tu producto');
+            setIsLoading(false);
             return false;
         }
         else {
@@ -83,7 +89,7 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
                         ): null
                     }
 
-                    <TouchableOpacity onPress={() => SelectImage(setImage)}>
+                    <TouchableOpacity onPress={() => SelectImage().then((image) => {setImage(image)})}>
                         <Text style={styles.textImageInput}>Seleccionar archivo</Text>
                     </TouchableOpacity>
                     </View>
@@ -93,7 +99,12 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
                     <Text style={styles.inputLabel}>Precio:</Text>
                     <TextInput style={styles.priceInput}
                         keyboardType='numeric'
-                        onChangeText={(text) => setPrice(parseInt(text))}
+                        onChangeText={(value) => {
+                            let formattedPrice = value.replace(/\s/g, '').replace(/[^0-9]/g, '')
+                            formattedPrice = formattedPrice == "" ? "0" : formattedPrice;
+                            setPrice(parseInt(formattedPrice))
+                        }}
+                        value={price.toString() != "NaN" ? price.toString() : "0"}
                     />
                 </View>
 
@@ -102,6 +113,7 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
 
             <TouchableOpacity style={styles.button}
                 onPress={async () => {
+                    if(isLoading) return;
                     if(validate()) {
                         const uri = await fetch(image);
                         const blob = await uri.blob();
@@ -113,19 +125,28 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
                         .then(() => {
                         getDownloadURL(storageRef)
                         .then((url) => {
-                            onAddProduct(title, description, url, price)
+                            setIsLoading(false);
+                            onAddProduct(title, description, url, price);
                         })
                         .catch((error) => {
+                            setIsLoading(false);
                             alert(error.message);
                         })
                         })
                         .catch((error) => {
+                            setIsLoading(false);
                             alert(error.message);
                         });
                     }
                 }}
             >
-                <Text style={styles.buttonText}>Agregar</Text>
+                {
+                    isLoading ? (
+                        <ActivityIndicator size="small" color={colors.primary} />
+                    ): (
+                        <Text style={styles.buttonText}>Agregar</Text>
+                    )
+                }
             </TouchableOpacity>
 
         </View>

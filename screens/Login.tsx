@@ -1,12 +1,16 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard } from 'react-native'
-import React, {useState} from 'react'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, {useState, useEffect} from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
-import { colors } from '../StyleVariables'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import * as Network from 'expo-network';
+import LoginWithEmail from '../hooks/LoginWithEmail';
+
+import { colors, templates } from '../StyleVariables'
 
 // COMPONENTS
 import Icon from '../assets/icons'
+import NoConnectionComponent from '../components/NoConnectionComponent'
+import ErrorPopup from '../components/ErrorPopup';
 
 // TYPES
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -17,67 +21,108 @@ type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 const Login = () => {
   const navigation = useNavigation<LoginScreenProp>();
 
-  const auth = getAuth();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const LoginWithEmail = async function (email: string, password: string) {
-    if(email.length === 0 || password.length === 0) return;
+  const [seePassword, setSeePassword] = useState(true);
 
-    Keyboard.dismiss();
-    
-    signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-        navigation.replace("EditProduct");
-    })
-    .catch((error) => {
-        if (error.message == "Firebase: Error (auth/user-not-found).") {
-          alert("Usuario no encontrado");
+  const [errorPopup, setErrorPopup] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const [isConnected, setIsConnected] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setInterval(() => {
+      Network.getNetworkStateAsync().then(async (state) => {
+        if(state.isConnected) {
+          setIsConnected(true);
+        } else {
+          setIsConnected(false);
         }
-        else if(error.message == "Firebase: Error (auth/invalid-email).") {
-          alert("Correo inválido");
-        }
-        else if (error.message == "Firebase: Error (auth/wrong-password).") {
-          alert("Contraseña incorrecta");
-        }
-        else {
-          alert(error.message);
-        }
-    });
+      });
+    }, 1000);
+  }, [])
+
+  if(!isConnected) {
+    return (
+      <NoConnectionComponent onConnectionStatusChange={(status) => setIsConnected(status)}/>
+    )
   }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.returnIcon} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={templates.returnIcon} onPress={() => navigation.goBack()}>
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
 
       <Text style={styles.title}>¿LISTO PARA{"\n"}VENDER MÁS?</Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Correo:</Text>
+        <Text style={templates.inputLabel}>Correo:</Text>
         <TextInput style={styles.input} onChangeText={(value) => setEmail(value.replace(/\s/g, ''))} value={email} autoCapitalize={"none"}/>
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Contraseña:</Text>
-        <TextInput style={styles.input} onChangeText={(value) => {setPassword(value)}} value={password} autoCapitalize={"none"} secureTextEntry={true}/>
+        <Text style={templates.inputLabel}>Contraseña:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(value) => {setPassword(value)}}
+          value={password}
+          autoCapitalize={"none"}
+          secureTextEntry={seePassword}
+        />
+        <TouchableOpacity style={styles.eyeIcon}
+          onPress={() => setSeePassword(!seePassword)}
+        >
+          <Icon name={seePassword ? "closedEye" : "eye"} width={vs(17)} height={vs(17)} color={"#FFF"}/>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.mainButton}
-        onPress={() => LoginWithEmail(email, password)}
+        onPress={ async () => {
+          setIsLoading(true);
+          if (isLoading) return;
+          let success = await LoginWithEmail(email, password);
+          if(success == 0) navigation.replace("EditProduct");
+          else if(typeof success == "string") {
+            setErrorPopup(404);
+            setErrorMessage(success);
+          }
+          else if (success){
+            setErrorPopup(success);
+          }
+          setIsLoading(false);
+        }}
       >
-        <Text style={styles.mainButtonText}>Iniciar sesión</Text>
+        {
+          isLoading ? (
+            <ActivityIndicator size="small" color={colors.primary}/>
+          ) : (
+            <Text style={styles.mainButtonText}>Iniciar sesión</Text>
+          )
+        }
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.forgotPassword}>
-        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("ForgotPassword")}
+      >
+        <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate("RegisterUser")}}>
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>
+
+      {
+        errorPopup > 0 && (
+          <ErrorPopup
+            id={errorPopup-1}
+            onClose={() => setErrorPopup(0)}
+            errorMessage={errorPopup == 404 ? errorMessage : undefined}
+          />
+        )
+      }
     </View>
   )
 }
@@ -91,31 +136,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  returnIcon: {
-    width: vs(26),
-    height: vs(26),
-    position: 'absolute',
-    top: vs(35),
-    right: s(15),
-    zIndex: 1,
-  },
   title: {
-    fontSize: vs(32),
+    fontSize: vs(30),
     fontFamily: "GorditaBold",
     color: "#FFF",
     marginLeft: s(-25),
-    lineHeight: vs(50),
+    lineHeight: vs(48),
     marginBottom: vs(40),
   },
   inputContainer: {
     alignItems: 'flex-start',
     marginBottom: vs(20),
     marginRight: s(20),
-  },
-  inputLabel: {
-    fontSize: vs(10),
-    fontFamily: "GorditaMedium",
-    color: "#FFF",
   },
   input: {
     width: s(270),
@@ -129,7 +161,7 @@ const styles = StyleSheet.create({
     marginTop: vs(30),
     backgroundColor: "#FFF",
     paddingHorizontal: s(50),
-    paddingVertical: vs(5),
+    paddingVertical: vs(4),
     borderRadius: 3,
   },
   mainButtonText: {
@@ -139,8 +171,6 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     marginTop: vs(5),
-  },
-  forgotPasswordText: {
     fontFamily: "GorditaRegular",
     fontSize: vs(9),
     color: "#FFF",
@@ -159,5 +189,10 @@ const styles = StyleSheet.create({
     fontSize: vs(11),
     fontFamily: "GorditaMedium",
     color: "#FFF",
+  },
+  eyeIcon: {
+    position: "absolute",
+    top: vs(14),
+    right: vs(5), 
   },
 })

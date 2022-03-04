@@ -2,7 +2,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, Touchable } from 'reac
 import React from 'react'
 import { s, vs } from 'react-native-size-matters'
 import {useNavigation} from '@react-navigation/native';
-
+import { doc, getFirestore, updateDoc, increment } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { colors } from '../StyleVariables'
 
 // TYPES
@@ -10,22 +11,44 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
 type ProductInfoScreenProp = StackNavigationProp<RootStackParamList, 'ProductInfo'>;
+type PostProps = {
+  title: string,
+  description: string,
+  image: string,
+  id: string
+}
 
-
-const Post = ({title, description, image, id}: {title: string, description: string, image: string, id: string}) => {
+const Post = ({title, description, image, id}: PostProps) => {
   const navigation = useNavigation<ProductInfoScreenProp>();
+
+  const db = getFirestore();
+  const auth = getAuth();
+  const uid = auth.currentUser?.uid;
 
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => {navigation.navigate("ProductInfo", {id: id})}}
+      onPress={() => {
+        if(uid == id) {
+          navigation.navigate("ProductInfo", {id: id})
+          return;
+        };
+
+        updateDoc(doc(db, "Products", id), {
+          views: increment(1)
+        })
+        .then( () => {
+          navigation.navigate("ProductInfo", {id: id})
+        })
+        .catch((error) => {
+          alert(error);
+        })
+      }}
     >
 
       <View style={styles.leftContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{
-          description.substring(0, 130) + "..."
-        }</Text>
+        <Text style={styles.description}>{description?.substring(0, 130) + "..."}</Text>
       </View>
 
       <View>

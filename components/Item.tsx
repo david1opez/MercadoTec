@@ -1,13 +1,30 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import {vs, s} from "react-native-size-matters";
 
 import{ colors } from "../StyleVariables";
 
+// TYPES
+type ItemProps = {
+  image: string,
+  title: string,
+  description: string,
+  price: number,
+  index: number,
+  itemsLenght: number,
+  onPress: (image: string) => void
+}
 
-const Item = ({image, title, description, price, index, itemsLenght}:{image: string, title: string, description: string, price: number, index: number, itemsLenght: number}) => {
+const Item = ({image, title, description, price, index, itemsLenght, onPress}: ItemProps) => {
   return (
-    <View key={index} style={index == 0 ? [styles.itemContainer, {marginTop: vs(25)}] : index == itemsLenght - 1 ? [styles.itemContainer, {marginBottom: vs(100)}] : styles.itemContainer}>
+    <TouchableOpacity
+      style={
+        index == 0 ? [styles.itemContainer, {marginTop: vs(25)}] :
+        index == itemsLenght - 1 ? [styles.itemContainer, {marginBottom: vs(100)}] :
+        styles.itemContainer
+      }
+      onPress={() => onPress(image)}
+    >
         <Image source={{uri: image}} style={styles.itemImage}/>
         
         <View>
@@ -15,7 +32,7 @@ const Item = ({image, title, description, price, index, itemsLenght}:{image: str
             <Text style={styles.itemDescription}>{description}</Text>
             <Text style={styles.itemPrice}>${price}</Text>
         </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
@@ -42,13 +59,13 @@ const styles = StyleSheet.create({
       itemDescription: {
         fontFamily: 'GorditaRegular',
         fontSize: vs(8),
-        lineHeight: vs(10),
+        lineHeight: vs(12),
         width: s(210),
         marginBottom: vs(5),
       },
       itemPrice: {
         fontFamily: 'GorditaBold',
         color: colors.primary,
-        fontSize: vs(11),
+        fontSize: vs(12),
       },
 })

@@ -4,29 +4,56 @@ import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import * as Linking from 'expo-linking';
+import * as SplashScreen from 'expo-splash-screen';
 
 import{ colors } from "../StyleVariables";
 
 // COMPONENTS
 import Item from '../components/Item';
 import Icon from '../assets/icons'
+import NoConnectionComponent from '../components/NoConnectionComponent';
+import ImagePopup from '../components/ImagePopup';
+
+// TYPES
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../App';
+
+type ProductInfoScreenProp = StackNavigationProp<RootStackParamList, 'ProductInfo'>;
 
 
 const ProductInfo = ({route}: any) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ProductInfoScreenProp>();
+
+  const db = getFirestore();
 
   const id = route.params.id;
 
-  const db = getFirestore();
+  const [isConnected, setIsConnected] = useState<boolean>(true);
+  const [showImagePopup, setShowImagePopup] = useState<boolean>();
+  const [popupImage, setPopupImage] = useState<string>();
 
   const [product, setProduct] = useState<any>();
 
   useEffect(() => {
+    if(!product) {
+      SplashScreen.preventAutoHideAsync();
+    }
+
     getDoc(doc(db, "Products", id))
     .then((result) => {
       setProduct(result.data());
     })
   }, [])
+
+  if(!isConnected) {
+    return (
+      <NoConnectionComponent onConnectionStatusChange={(status: boolean) => setIsConnected(status)}/>
+    )
+  }
+
+  if(product) {
+    SplashScreen.hideAsync();
+  }
 
   if(!product) {
     return (
@@ -36,7 +63,7 @@ const ProductInfo = ({route}: any) => {
 
   return (
     <View>
-      <TouchableOpacity style={styles.returnIcon} onPress={() => {navigation.goBack()}}>
+      <TouchableOpacity style={styles.returnIcon} onPress={() => {navigation.navigate("Home")}}>
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
 
@@ -46,20 +73,30 @@ const ProductInfo = ({route}: any) => {
       </View>
 
       <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.description}>{product.description}</Text>
+
+      <View style={[styles.descriptionScrollContainer, product.items.length == 0 && {maxHeight: vs(300),}]}>
+        <ScrollView>
+          <Text style={styles.description}>{product.description}</Text>
+        </ScrollView>
+      </View>
 
       <View style={styles.scrollContainer}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {
             product.items.map((item: any, index: number) => {
               return(
-                <Item key={index}
+                <Item
+                  key={index}
                   image={item.image}
                   title={item.title}
                   description={item.description}
                   price={item.price}
                   index={index}
                   itemsLenght={product.items.length}
+                  onPress={(image) => {
+                    setPopupImage(image);
+                    setShowImagePopup(true);
+                  }}
                 />
               )
             })
@@ -69,12 +106,20 @@ const ProductInfo = ({route}: any) => {
       </View>
 
       <TouchableOpacity style={styles.button}
-        onPress={() => {
-          Linking.openURL(product.link);
-        }}
+        onPress={() => Linking.openURL(product.link)}
       >
         <Text style={styles.buttonText}>Contactar</Text>
       </TouchableOpacity>
+
+      {
+        showImagePopup && popupImage ? (
+          <ImagePopup image={popupImage}
+            onClose={() => {
+              setShowImagePopup(false)
+              setPopupImage("")
+            }}/>
+        ): null
+      }
 
     </View>
   )
@@ -109,12 +154,15 @@ const styles = StyleSheet.create({
     fontFamily: 'GorditaBold',
     marginHorizontal: s(15),
     fontSize: vs(16),
-    marginBottom: vs(5),
+    marginBottom: vs(10),
+  },
+  descriptionScrollContainer: {
+    maxHeight: vs(108),
   },
   description: {
     fontFamily: 'GorditaRegular',
     fontSize: vs(9),
-    lineHeight: vs(12),
+    lineHeight: vs(13),
     marginHorizontal: s(15),
     marginBottom: vs(10),
   },
@@ -124,7 +172,7 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    bottom: vs(30),
+    top: vs(630),
     backgroundColor: colors.primary,
     left: s(70),
     right: s(70),
@@ -137,6 +185,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     elevation: 6,
+    zIndex: 2,
   },
   buttonText: {
     color: "#FFF",

@@ -1,107 +1,111 @@
-import { ScrollView, StyleSheet, Text, View, Keyboard } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Keyboard, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {vs, s} from "react-native-size-matters";
+import { doc, getFirestore, getDoc } from 'firebase/firestore'
+import * as SplashScreen from 'expo-splash-screen';
+
 import{ colors } from "../StyleVariables";
-import { doc, onSnapshot, getFirestore, getDoc } from 'firebase/firestore'
 
 // COMPONENTS
 import Navbar from "../components/Navbar";
 import Post from '../components/Post';
-import FeaturedPost from '../components/FeaturedPost';
+import PromotedPost from '../components/PromotedPost';
 import Category from '../components/Category';
+import NoConnectionComponent from '../components/NoConnectionComponent';
 
+// TYPES
+type Post = {title: string, description: string, image: string, id: string}
+type PromotedPost = {title: string, seller: string, image: string, id: string}
+type AllPosts = {
+  [key: string]: Post[]
+}
 
-const categories: string[] = [
-  "Cerca de ti",
-  "Comida",
-  "Regalos",
-  "Ropa",
-  "Higiene",
-  "Miscelaneos"
-];
 
 const Home = () => {
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-
   const db = getFirestore();
 
-  const [products, setProducts] = useState([]);
-  const [promotedPosts, setPromotedPosts] = useState<any>([]);
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
 
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchBarvalue, setSearchValue] = useState("");
+  const [allProducts, setAllProducts] = useState<AllPosts>();
+  const [promotedPosts, setPromotedPosts] = useState<PromotedPost[]>([]);
+  const [activeCategoryProducts, setActiveCategoryProducts] = useState<Post[]>([]);
 
-  const [allProducts, setAllProducts] = useState<any>({});
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [searchBarvalue, setSearchBarValue] = useState<string>("");
+
+  const [isConnected, setIsConnected] = useState<boolean>(true);
+
+  const categories: string[] = [
+    "Todos",
+    "Comida",
+    "Regalos",
+    "Ropa",
+    "Higiene",
+    "Otros"
+  ];
 
   const GetPromotedPosts = async () => {
     let docSnap = await getDoc(doc(db, "Products", "Promoted"));
-
     if(!docSnap.exists()) return;
-
     let data = docSnap.data();
     setPromotedPosts(data.Posts);
   }
 
   const GetProducts = async () => {
     let docSnap = await getDoc(doc(db, "Products", "Preview"));
-
     if(!docSnap.exists()) return;
     setAllProducts(docSnap.data());
   }
 
   useEffect(() => {
+    if(!activeCategoryProducts || !promotedPosts) {
+      SplashScreen.preventAutoHideAsync();
+    }
+
     GetPromotedPosts();
     GetProducts();
   }, [])
 
   useEffect(() => {
-    const dbCategories = [
-      "Todos",
-      "Comida",
-      "Regalos",
-      "Ropa",
-      "Higiene",
-      "Miscelaneos"
-    ]
-
     if(!allProducts) return;
-    setProducts(allProducts[dbCategories[activeCategoryIndex]]);
-
+    let category: string = categories[activeCategoryIndex];
+    setActiveCategoryProducts(allProducts[category]);
   }, [allProducts]);
 
   useEffect(() => {
-    const dbCategories = [
-      "Todos",
-      "Comida",
-      "Regalos",
-      "Ropa",
-      "Higiene",
-      "Miscelaneos"
-    ]
-
-    if(!products) return;
-    setProducts(allProducts[dbCategories[activeCategoryIndex]]);
-
+    if(!activeCategoryProducts) return;
+    let category: string = categories[activeCategoryIndex];
+    if(allProducts) setActiveCategoryProducts(allProducts[category]);
   }, [activeCategoryIndex]);
 
 
+  if(!isConnected) {
+    return (
+      <NoConnectionComponent onConnectionStatusChange={(status) => setIsConnected(status)}/>
+    )
+  }
+
+  if(activeCategoryProducts && promotedPosts) {
+    SplashScreen.hideAsync();
+  }
 
   return (
     <View style={styles.container}>
 
       <Navbar
-        onChangeValue={(text: string) => {
+        onChangeSearchValue={(text) => {
           if(text == "" || text == " ") {
             setIsSearching(false);
             return;
           };
           setIsSearching(true);
-          setSearchValue(text);
+          setSearchBarValue(text);
         }}
-        onReturnToHome={() => {
+        onPress={() => {
           setIsSearching(false);
-          setSearchValue("");
           Keyboard.dismiss();
+          GetProducts();
+          GetPromotedPosts();
         }}
       />
 
@@ -111,10 +115,14 @@ const Home = () => {
             <Text style={styles.searchResultsTitle}>Resultados de la búsqueda</Text>
             <ScrollView>
               {
-                // Search in the allProducts.Todos array the ones that match the searchBarvalue, if there's nothing found return a text
-                allProducts.Todos.filter((product: any) => {
-                  return product?.title.toLowerCase().replace(/\s/g, '').includes(searchBarvalue.toLowerCase().replace(/\s/g, ''));
-                }).map((product: any, index: number) => {
+                allProducts?.Todos.filter((product: Post): boolean => {
+
+                  let titleResults = product?.title.toLowerCase().replace(/\s/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchBarvalue.replace(/\s/g, ''))
+                  let descriptionResults = product?.description.toLowerCase().replace(/\s/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchBarvalue.replace(/\s/g, ''));
+
+                  return titleResults || descriptionResults;
+
+                }).map((product: Post, index: number) => {
                   return (
                     <Post
                       key={index}
@@ -130,23 +138,27 @@ const Home = () => {
           </View>
         ) : (
           <View>
-            {/* Featured */}
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.featuredPostsContainer}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.promotedPostsContainer}>
               {
-                promotedPosts.map((post: any, index: number) => {
-                  return (
-                    <FeaturedPost key={index} index={index}
-                      title={post.title}
-                      seller={post.seller}
-                      image={post.image}
-                      id={post.id}
-                    />
-                  )
-                })
+                promotedPosts.length > 0 ? (
+                  promotedPosts.map((post: PromotedPost, index: number) => {
+                    return (
+                      <PromotedPost
+                        key={index}
+                        index={index}
+                        title={post.title}
+                        seller={post.seller}
+                        image={post.image}
+                        id={post.id}
+                      />
+                    )
+                  })
+                ) : (
+                  <View style={styles.loadingPromotedPosts}/>
+                )
               }
             </ScrollView>
 
-            {/* Categories */}
             <Text style={styles.categoriesTitle}>Categorías :</Text>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
               {
@@ -164,14 +176,14 @@ const Home = () => {
               }
             </ScrollView>
 
-            {/* Posts */}
             <View style={styles.postsContainer}>
               <ScrollView>
                 {
-                  products && (
-                    products.map((post: any, index: number) => {
+                  activeCategoryProducts.length > 0 && (
+                    activeCategoryProducts.reverse().map((post: any, index: number) => {
                       return (
-                        <Post key={index}
+                        <Post
+                          key={index}
                           title={post.title}
                           description={post.description}
                           image={post.image}
@@ -197,7 +209,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF",
   },
-  featuredPostsContainer: {
+  promotedPostsContainer: {
     marginBottom: vs(20),
   },
   categoriesContainer: {
@@ -207,9 +219,9 @@ const styles = StyleSheet.create({
     marginLeft: s(16),
     marginBottom: vs(5),
     fontFamily: "GorditaMedium",
+    color: colors.primary,
     fontSize: s(9),
     textDecorationLine: "underline",
-    color: colors.primary,
   },
   postsContainer: {
     marginHorizontal: s(16),
@@ -224,5 +236,9 @@ const styles = StyleSheet.create({
     marginBottom: vs(10),
     color: colors.primary,
     textDecorationLine: 'underline',
+  },
+  loadingPromotedPosts: {
+    height: vs(200),
+    width: s(150),
   }
 })

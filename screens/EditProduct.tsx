@@ -1,14 +1,16 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View, ScrollView, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, ScrollView, TextInput, ActivityIndicator, Keyboard } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { signOut, getAuth } from 'firebase/auth';
 import {vs, s} from "react-native-size-matters";
 import { useNavigation } from '@react-navigation/native'
 import SelectImage from '../hooks/SelectImage';
-import convertUriToBlob from '../hooks/convertUriToBlob';
-import uploadAndGetDownloadUrl from '../hooks/uploadAndGetDownloadUrl';
 import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
+import convertUriToBlob from '../hooks/convertUriToBlob';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import * as Network from 'expo-network';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {colors} from "../StyleVariables";
+import {colors, templates} from "../StyleVariables";
 
 // COMPONENTS
 import AddProductPopup from '../components/AddProductPopup';
@@ -18,7 +20,6 @@ import ItemPreview from '../components/ItemPreview';
 // TYPES
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
-import { connectStorageEmulator } from 'firebase/storage';
 
 type Item = {
   title: string
@@ -32,21 +33,29 @@ const EditProduct = () => {
   const navigation = useNavigation<EditProductScreenProp>();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isImageChanged, setIsImageChanged] = useState(false);
+  const [isInfoUploading, setIsInfoUploading] = useState(false);
 
-  const [image, setImage] = useState('');
+  const [image, setImage]: any = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [items, setItems]: any = useState([]);
+  
   const [contactOption, setContactOption] = useState('');
   const [contactLink, setContactLink] = useState('');
+  const [contactInputValue, setContactInputValue] = useState('');
+
+  const [views, setViews] = useState(0);
 
   const db = getFirestore();
   const auth = getAuth();
   const uid: any = auth.currentUser?.uid;
 
   const uploadToDatabase = async () => {
+    setIsInfoUploading(true);
+
     if(!isImageChanged) {
       updateDoc(doc(db, "Products", uid), {
         title: title,
@@ -55,16 +64,46 @@ const EditProduct = () => {
         link: contactLink,
         items: items,
       }).then(() => {
-        alert("Tú publicación fue actualizada :)")
-        navigation.goBack();
+        getDoc(doc(db, "Products", "Preview"))
+        .then((docs) => {
+          let data = docs.data();
+          let oldAllData = data?.Todos;
+
+          oldAllData = oldAllData.filter((item: any) => item.id !== uid);
+
+          let newData = {
+            id: uid,
+            title: title,
+            description: description,
+            image: image,
+          }
+
+          let newAllData = [...oldAllData, newData];
+
+          console.log(newAllData);
+
+          updateDoc(doc(db, "Products", "Preview"), {
+            Todos: newAllData
+          }).then(() => {
+            alert("Tu publicación ha sido actualizada");
+            setIsInfoUploading(false);
+            navigation.navigate("Home");
+          })
+          .catch((err) => {
+            setIsInfoUploading(false);
+            alert(err)
+          })
+
+          
+        })
       })
-      .catch((error) => alert(error))
+      .catch((error) => {
+        setIsLoading(false);
+        alert(error)
+      })
 
       return;
     }
-
-    const blob = await convertUriToBlob(image);
-    const downloadUrl = await uploadAndGetDownloadUrl(`${uid}/mainProductImage.jpg`, blob);
 
     updateDoc(doc(db, "Products", uid), {
       title: title,
@@ -72,28 +111,85 @@ const EditProduct = () => {
       image: image,
       link: contactLink,
       items: items,
+      views: 0
     }).then(() => {
-      alert("Tú publicación fue actualizada :)")
+      getDoc(doc(db, "Products", "Preview"))
+      .then((docs) => {
+        let data = docs.data();
+        let oldAllData = data?.Todos;
+
+        oldAllData = oldAllData.filter((item: any) => item.id !== uid);
+
+        let newData = {
+          id: uid,
+          title: title,
+          description: description,
+          image: image,
+        }
+
+        let newAllData = [...oldAllData, newData];
+
+        updateDoc(doc(db, "Products", "Preview"), {
+          Todos: newAllData
+        }).then(() => {
+          setIsInfoUploading(false);
+          alert("Tu publicación ha sido actualizada");
+          navigation.navigate("Home");
+        })
+        .catch((err) => {
+          setIsInfoUploading(false);
+          alert(err)
+        })
+
+
+
+
+
+
+
+        
+      })
     })
-    .catch((error) => alert(error))
+    .catch((error) => {
+      setIsInfoUploading(false);
+      alert(error)
+    })
   }
 
   useEffect(() => {
     getDoc(doc(db, "Products", uid))
     .then((result) => {
+      if(!result.data()) {
+        AsyncStorage.getItem("@link")
+        .then((link) => {
+          if(!link) link = "";
+          navigation.navigate("RegisterProduct", {link: link});
+          return
+        })
+        .catch((err) => {
+          alert(err);
+        })
+      }
       setTitle(result.data()?.title);
       setDescription(result.data()?.description);
       setImage(result.data()?.image);
       setItems(result.data()?.items);
       setContactLink(result.data()?.link);
+      setViews(result.data()?.views);
     
       let link = result.data()?.link;
 
       if(link.includes("wa.me")) {
+        let inputValue = link.replace("https://wa.me/", "")
+        setContactInputValue(inputValue)
         setContactOption("Whatsapp");
       } else if(link.includes("telegram.me")) {
+        let inputValue = link.replace("https://telegram.me/", "")
+        setContactInputValue(inputValue)
         setContactOption("Telegram");
       } else if(link.includes("m.me")) {
+        let inputValue = link.replace("https://m.me/", "")
+        setContactInputValue(inputValue)
         setContactOption("Messenger");
       }
 
@@ -105,15 +201,54 @@ const EditProduct = () => {
     return (<View/>);
   }
 
+  if(!isConnected) {
+    return (
+      <View style={styles.noWificontainer}>
+
+        <View style={templates.logoContainer}>
+
+          <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
+          
+          <View style={styles.logoTextContainer}>
+            <Text style={styles.UpperLogoText}>Mercado</Text>
+            <Text style={styles.BottomLogoText}>Tec</Text>
+          </View>
+
+        </View>
+
+        <Text style={styles.wifiTitle}>No hay conexión a internet :(</Text>
+
+        <TouchableOpacity
+          onPress={async () => {
+            setIsLoading(true);
+            const connection: any = await Network.getNetworkStateAsync();
+            setIsConnected(connection.isConnected)
+
+            setIsLoading(false);
+          }}
+          style={styles.retryButton}
+        >
+          {
+            isLoading ? (
+              <ActivityIndicator size="small" color={"#FFF"} />
+            ) : (
+              <Text style={styles.retryButtonText}>Reintentar</Text>
+            )
+          }
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.returnIcon}
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.replace("Home")}
       >
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={colors.primary}/>
       </TouchableOpacity>
-      <View style={styles.logoContainer}>
+      <View style={templates.logoContainer}>
 
         <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
         
@@ -125,14 +260,34 @@ const EditProduct = () => {
       </View>
 
       <Text style={styles.title}>Editar publicación</Text>
+      <Text style={styles.views}>{views} visitas</Text>
 
 
       <View style={styles.scrollContainer}>
         <ScrollView>          
           <TouchableOpacity style={styles.imageInputContainer}
             onPress={async () => {
-              SelectImage(setImage)
-              setIsImageChanged(true)
+              SelectImage().then((uri) => {
+                convertUriToBlob(uri).then((blob) => {
+                  const storage = getStorage();
+                  const storageRef = ref(storage, `${uid}/mainProductImage.jpg`);
+
+                  uploadBytes(storageRef, blob)
+                  .then(() => {
+                    getDownloadURL(storageRef)
+                    .then((url) => {
+                      setImage(url);
+                      setIsImageChanged(true);
+                    })
+                    .catch((error) => {
+                      alert(error)
+                    })
+                  })
+                  .catch((error) => {
+                    alert(error)
+                  });
+                })
+              })
             }}
           >
             <View style={styles.imageContainer}>
@@ -162,25 +317,23 @@ const EditProduct = () => {
           <Text style={styles.inputLabel}>Productos</Text>
 
           <View style={styles.itemsScrollContainer}>
-            <ScrollView>
-              {
-                items.map((item: any, index: number) => {
-                  return(
-                    <ItemPreview
-                      key={index}
-                      title={item.title}
-                      description={item.description}
-                      image={item.image}
-                      price={item.price}
-                      index={index}
-                      onRemoveItem={(index: number) => {
-                        setItems(items?.filter((_: any, i: number) => i !== index));
-                      }}
-                    />
-                  );
-                })
-              }
-            </ScrollView>
+            {
+              items.map((item: any, index: number) => {
+                return(
+                  <ItemPreview
+                    key={index}
+                    title={item.title}
+                    description={item.description}
+                    image={item.image}
+                    price={item.price}
+                    index={index}
+                    onRemoveItem={(index: number) => {
+                      setItems(items?.filter((_: any, i: number) => i !== index));
+                    }}
+                  />
+                );
+              })
+            }
           </View>
 
           <TouchableOpacity style={styles.addItemButton}
@@ -214,21 +367,27 @@ const EditProduct = () => {
           </View>
 
           <TextInput
-            style={styles.input} onChangeText={(value) => {
+            style={styles.input}
+            onChangeText={(value) => {
               if(contactOption == 'Whatsapp'){
-                setContactLink(`https://wa.me/${value}`);
+                let phoneNumber = value.replace(/\s/g, '').replace(/[^0-9]/g, '');
+                setContactInputValue(phoneNumber);
+                setContactLink(`https://wa.me/${phoneNumber}`);
               }
               else if(contactOption == 'Telegram'){
-                setContactLink(`https://telegram.me/${value}`);
+                setContactInputValue(value.replace(/\s/g, ''));
+                setContactLink(`https://telegram.me/${value.replace(/\s/g, '')}`);
               }
               else {
-                setContactLink(`https://m.me/${value}`);
+                setContactInputValue(value.replace(/\s/g, ''));
+                setContactLink(`https://m.me/${value.replace(/\s/g, '')}`);
               }
             }}
             autoCapitalize={"none"}
             placeholder={contactOption == 'Whatsapp' ? 'Teléfono ej. 528441234567' : contactOption == 'Telegram' ? 'Nombre de usuario' : 'Nombre de usuario'}
             placeholderTextColor={"rgba(0, 0, 0, 0.5)"}
             keyboardType={contactOption == 'Whatsapp' ? 'numeric' : 'default'}
+            value={contactInputValue}
           />
           </View>
 
@@ -238,9 +397,19 @@ const EditProduct = () => {
 
       <View style={styles.mainButtonsContainer}>
         <TouchableOpacity style={styles.saveButton}
-          onPress={() => uploadToDatabase()}
+          onPress={() => {
+            if(isLoading) return;
+            Keyboard.dismiss();
+            uploadToDatabase()
+          }}
         >
-          <Text style={styles.saveButtonText}>Guardar cambios</Text>
+          {
+            isInfoUploading ? (
+              <ActivityIndicator size="large" color={"#FFF"}/>
+            ) : (
+              <Text style={styles.saveButtonText}>Guardar cambios</Text>
+            )
+          }
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.promoteButton}
@@ -267,7 +436,7 @@ const EditProduct = () => {
 
     { isOpen && (
       <AddProductPopup
-        index={45}
+        index={items.length}
         onAddProduct={(title: string, description: string, image: string, price: number) => {
           let newItem = {
             title: title,
@@ -305,14 +474,6 @@ const styles = StyleSheet.create({
     right: s(15),
     zIndex: 1,
   },
-  logoContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute',
-    top: vs(35),
-    left: s(15),
-  },
   logoTextContainer: {
     marginLeft: s(7),
   },
@@ -332,7 +493,6 @@ const styles = StyleSheet.create({
   },
   itemsScrollContainer: {
     width: s(320),
-    maxHeight: vs(200),
   },
   title: {
     fontFamily: "GorditaBold",
@@ -503,4 +663,35 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     color: colors.primary,
   },
+  views: {
+    position: 'absolute',
+    top: vs(115),
+    right: s(36),
+    color: colors.primary,
+    fontSize: vs(9),
+    fontFamily: "GorditaMedium",
+  },
+  noWificontainer: {
+    backgroundColor: "#FFF",
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wifiTitle: {
+    fontFamily: "GorditaRegular",
+    fontSize: s(14),
+    marginBottom: vs(20),
+    color: 'rgba(0,0,0,0.5)',
+  },
+  retryButton: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: s(20),
+    paddingVertical: vs(3),
+    borderRadius: 3,
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontFamily: "GorditaMedium",
+    fontSize: s(12),
+  }
 })

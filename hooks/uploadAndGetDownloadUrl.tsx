@@ -8,14 +8,17 @@ const uploadAndGetDownloadUrl = async (filename: string, blob: Blob) => {
     .then(() => {
       getDownloadURL(storageRef)
       .then((url) => {
+        console.log(url)
         return url;
       })
       .catch((error) => {
-        throw(error);
+        console.log(error)
+        return '';
       })
     })
     .catch((error) => {
-      throw(error);
+      console.log(error)
+      return '';
     });
 }
 

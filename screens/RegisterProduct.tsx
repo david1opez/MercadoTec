@@ -34,27 +34,32 @@ const RegisterProduct = ({route}: any) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
-  const [category, setCategory] = useState("Miscelaneos");
+  const [category, setCategory] = useState("Comida");
 
   const validate = async () => {
+    setIsLoading(true);
+
     if(title.length == 0) {
       alert('Porfavor escribe un título para describir tu producto');
+      setIsLoading(false);
       return false;
     }
     else if(description.length == 0) {
       alert('Porfavor escribe la descripción de tu producto');
+      setIsLoading(false);
       return false;
     }
     else if(image.length == 0) {
       alert('Porfavor selecciona una imagen para tu producto');
+      setIsLoading(false);
       return false;
     }
     else if(category.length == 0) {
       alert('Porfavor selecciona una categoría para tu producto');
+      setIsLoading(false);
+      return false;
     }
     else {
-      setIsLoading(true);
-
       const uri = await fetch(image)
       const blob = await uri.blob();
 
@@ -70,6 +75,7 @@ const RegisterProduct = ({route}: any) => {
             image: url,
             items: [],
             link: link,
+            views: 0
           })
           .then(() => {
             updateDoc(doc(db, "Products", "Preview"), {
@@ -119,7 +125,7 @@ const RegisterProduct = ({route}: any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.returnIcon} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.returnIcon} onPress={() => navigation.navigate("Home")}>
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
 
@@ -155,17 +161,17 @@ const RegisterProduct = ({route}: any) => {
             <View style={styles.categoryOptions}>
 
               <TouchableOpacity style={styles.categoryOption} onPress={() => {
-                setCategory("Miscelaneos");
-                setShowOptions(false)
-              }}>
-                <Text style={styles.categoryOptionText}>Miscelaneos</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.categoryOption} onPress={() => {
                 setCategory("Comida");
                 setShowOptions(false)
               }}>
                 <Text style={styles.categoryOptionText}>Comida</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.categoryOption} onPress={() => {
+                setCategory("Regalos");
+                setShowOptions(false)
+              }}>
+                <Text style={styles.categoryOptionText}>Regalos</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.categoryOption} onPress={() => {
                 setCategory("Ropa");
@@ -174,16 +180,16 @@ const RegisterProduct = ({route}: any) => {
                 <Text style={styles.categoryOptionText}>Ropa</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.categoryOption} onPress={() => {
-                setCategory("Regalos");
-                setShowOptions(false)
-              }}>
-                <Text style={styles.categoryOptionText}>Regalos</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.categoryOption} onPress={() => {
                 setCategory("Higiene");
                 setShowOptions(false)
               }}>
                 <Text style={styles.categoryOptionText}>Higiene</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.categoryOption} onPress={() => {
+                setCategory("Otros");
+                setShowOptions(false)
+              }}>
+                <Text style={styles.categoryOptionText}>Otros</Text>
               </TouchableOpacity>
             </View>
           )
@@ -202,7 +208,7 @@ const RegisterProduct = ({route}: any) => {
             :
             null
           }
-          <TouchableOpacity onPress={() => SelectImage(setImage)}>
+          <TouchableOpacity onPress={() => SelectImage().then(uri => {setImage(uri)})}>
             <Text style={styles.textImageInput}>Seleccionar archivo</Text>
           </TouchableOpacity>
         </View>
@@ -241,7 +247,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     marginBottom: vs(20),
     fontFamily: 'GorditaBold',
-    lineHeight: vs(47),
+    lineHeight: vs(43),
     marginRight: s(90),
     marginTop: vs(20),
   },
@@ -255,7 +261,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     alignItems: 'flex-start',
-    marginBottom: vs(20),
+    marginBottom: vs(10),
     marginRight: s(30),
   },
   inputLabel: {
@@ -271,7 +277,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   longInput: {
-    marginTop: vs(10),
+    marginTop: vs(5),
     width: s(270),
     borderWidth: 1,
     borderColor: "#FFF",
@@ -280,8 +286,9 @@ const styles = StyleSheet.create({
     color: "#FFF",
     paddingHorizontal: s(10),
     paddingVertical: vs(10),
-    fontSize: vs(10),
+    fontSize: vs(9),
     borderRadius: 3,
+    maxHeight: vs(120),
   },
   imageInputContainer: {
     width: s(270),
@@ -290,7 +297,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: vs(10),
+    marginTop: vs(5),
     borderRadius: 3,
     borderWidth: 1,
     borderColor: "#FFF",
@@ -344,7 +351,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     paddingVertical: vs(3),
     paddingLeft: s(10),
-    marginTop: vs(10),
+    marginTop: vs(5),
     marginBottom: vs(3),
     borderRadius: 3,
   },

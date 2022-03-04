@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native'
+import React, { useState } from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
 import SelectImage from '../hooks/SelectImage';
 import { getAuth } from 'firebase/auth';
 import { doc, updateDoc, getFirestore } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import uploadAndGetDownloadUrl from '../hooks/uploadAndGetDownloadUrl';
 import convertUriToBlob from '../hooks/convertUriToBlob';
 
 import { colors } from '../StyleVariables'
@@ -36,28 +35,43 @@ const RegisterItems = () => {
   const db = getFirestore();
 
   const [successPopup, setSuccessPopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState<any>('');
   const [price, setPrice] = useState(0);
+  const [image, setImage] = useState('');
 
   const [items, setItems] = useState<Items>([]);
-  const [newItems, setNewItems] = useState<Items>([]);
-  const [itemsImages, setItemsImages]: any = useState([]);
 
-  const addItem = () => {
-    setItems([...items, {
-      title: title,
-      description: description,
-      image: image,
-      price: price
-    }]);
+  const addItem = async () => {
+    setIsLoading(true);
+    convertUriToBlob(image).then((blob) => {
+      const storage = getStorage();
+      const storageRef = ref(storage, `${uid}/item${items.length}Image.jpg`);
 
-    setTitle('');
-    setDescription('');
-    setImage('');
-    setPrice(0);
+      uploadBytes(storageRef, blob)
+      .then(() => {
+        getDownloadURL(storageRef)
+        .then((url) => {
+          setItems([...items, {
+            title: title,
+            description: description,
+            image: url,
+            price: price
+          }]);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          alert(error)
+        })
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        alert(error)
+      });
+    })
   }
 
   const removeItem = (index: number) => {
@@ -67,14 +81,17 @@ const RegisterItems = () => {
   const validate = () => {
     if(title.length == 0) {
       alert('Porfavor escribe un título para describir tu producto');
+      setIsLoading(false);
       return false;
     }
     else if(description.length == 0) {
-      alert('Porfavor escribe la descripción de tu producto');
-      return false;
+      setDescription("---");
+      setIsLoading(false);
+      return true;
     }
     else if(image.length == 0) {
       alert('Porfavor selecciona una imagen para tu producto');
+      setIsLoading(false);
       return false;
     }
     else {
@@ -82,40 +99,24 @@ const RegisterItems = () => {
     }
   }
 
-  useEffect(() => {
-    if(items.length === 0) return;
-    if(itemsImages.length != items.length) return;
-
-    itemsImages.map((image: string, index: number) => {
-      setNewItems([...newItems, {
-        title: items[index].title,
-        description: items[index].description,
-        image: image,
-        price: items[index].price
-      }]);
-    });
-
-  }, [itemsImages])
-
-  useEffect(() => {
-    if(newItems.length === 0) return;
-    if(newItems.length != items.length) return;
-
+  const uploadItems = async () => {
     updateDoc(doc(db, "Products", uid), {
-      items: newItems
-    })
-    .then(() => {
+      items: items
+    }).then(() => {
       setSuccessPopup(true);
+      setIsLoading(false);
+
+      setImage('');
+      setTitle('');
+      setDescription('');
+      setPrice(0);
     })
-    .catch((error) => {
-      alert(error.message)
-    })
-  }, [newItems])
+  }
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.returnIcon}
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.replace("Home")}
       >
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
@@ -145,8 +146,12 @@ const RegisterItems = () => {
             <Text style={styles.inputLabel}>Precio:</Text>
             <TextInput
               style={styles.input}
-              onChangeText={(value) => {setPrice(parseInt(value))}}
-              value={price.toString() != "NaN" ? price.toString() : ""}
+              onChangeText={(value) => {
+                let formattedPrice = value.replace(/\s/g, '').replace(/[^0-9]/g, '')
+                formattedPrice = formattedPrice == "" ? "0" : formattedPrice;
+                setPrice(parseInt(formattedPrice))
+              }}
+              value={price.toString() != "NaN" ? price.toString() : "0"}
               keyboardType='numeric'
             />
           </View>
@@ -169,7 +174,7 @@ const RegisterItems = () => {
                 null
               }
 
-              <TouchableOpacity onPress={() => SelectImage(setImage)}>
+              <TouchableOpacity onPress={() => SelectImage().then(uri => {setImage(uri); setIsLoading(false)})}>
                 <Text style={styles.textImageInput}>Seleccionar archivo</Text>
               </TouchableOpacity>
             </View>
@@ -177,11 +182,21 @@ const RegisterItems = () => {
 
           <TouchableOpacity style={styles.secondaryButton}
             onPress={() => {
-              if(!validate) return;
-              addItem()
+              if(isLoading) return;
+              if(!validate) {
+                setIsLoading(false);
+                return;
+              };
+              addItem();
             }}
           >
-            <Text style={styles.secondaryButtonText}>Agregar</Text>
+            {
+              isLoading ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <Text style={styles.secondaryButtonText}>Agregar</Text>
+              )
+            }
           </TouchableOpacity>
 
         </View>
@@ -198,30 +213,24 @@ const RegisterItems = () => {
 
       <TouchableOpacity style={styles.mainButton}
         onPress={() => {
+          if(isLoading) return;
+          setIsLoading(true);
           if(items.length === 0) {
+            setIsLoading(false);
             setSuccessPopup(true);
             return;
           }
-          
-          items.map( async (item, index) => {
-            convertUriToBlob(item.image)
-            .then((blob) => {
-              uploadAndGetDownloadUrl(`${uid}/item${index}Image.jpg`, blob)
-              .then((url) => {
-                setItemsImages([...itemsImages, url]);
-              })
-              .catch((error) => {
-                alert(error.message)
-              })
-            })
-            
-          });
+          uploadItems();
         }}
       >
         {
           items.length > 0 ? (
-          <Text style={styles.mainButtonText}>Finalizar</Text>
-           ) : (
+            isLoading ? (
+              <ActivityIndicator size="large" color={colors.primary} />
+            ) : (
+              <Text style={styles.mainButtonText}>Finalizar</Text>
+            )
+          ) : (
           <Text style={styles.mainButtonText}>Omitir</Text>
           )
         }

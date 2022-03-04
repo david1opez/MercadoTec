@@ -1,7 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 
-
-export default async function SelectImage(setFunction: Function) {
+export default async function SelectImage(): Promise<string> {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -9,6 +8,8 @@ export default async function SelectImage(setFunction: Function) {
     });
     
     if (!result.cancelled) {
-        return setFunction(result.uri);
+        return result.uri
     }
+
+    return '';
 }

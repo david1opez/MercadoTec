@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import {vs, s} from "react-native-size-matters";
 import {useNavigation} from '@react-navigation/native';
+import {getAuth} from "firebase/auth";
 
 import {colors} from "../StyleVariables";
 
@@ -14,6 +15,9 @@ type RegisterItemsScreenProp = StackNavigationProp<RootStackParamList, 'Register
 const SuccessPopup = () => {
   const navigation = useNavigation<RegisterItemsScreenProp>();
 
+  const auth = getAuth();
+  const uid: any = auth.currentUser?.uid;
+
   return (
     <View style={styles.darkBackground}>
         <View style={styles.container}>
@@ -22,7 +26,7 @@ const SuccessPopup = () => {
             <Image style={styles.gif} source={{uri: "https://media2.giphy.com/media/fr0a9Np0PlcJTVevU5/giphy.gif?cid=ecf05e47637c873051241c4ffafeed3b643a55acbea94ce3&rid=giphy.gif&ct=g"}}/>
 
             <TouchableOpacity style={styles.button}
-                onPress={() => navigation.replace('PromotePost')}
+                onPress={() => navigation.replace('ProductInfo', {id: uid})}
             >
                 <Text style={styles.buttonText}>Continuar</Text>
             </TouchableOpacity>
