@@ -1,14 +1,24 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import React, {useState} from 'react'
 import {vs, s} from "react-native-size-matters";
+import { useNavigation } from '@react-navigation/native';
 
-import { colors } from '../StyleVariables'
+import { colors, templates } from '../StyleVariables'
 
 // COMPONENTS
 import PromotedPostPreview from '../components/PromotedPostPreview'
 import PromotePostPopup from '../components/PromotePostPopup'
+import Icon from '../assets/icons';
+
+// TYPES
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../App';
+
+type PromotePostScreenProp = StackNavigationProp<RootStackParamList, 'PromotePost'>;
 
 const PromotePost = () => {
+  const navigation = useNavigation<PromotePostScreenProp>();
+  
   const [showInfo, setShowInfo] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupInfo, setPopupInfo] = useState({index: 0, price: 0});
@@ -48,6 +58,10 @@ const PromotePost = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={templates.returnIcon} onPress={() => {navigation.navigate("EditProduct")}}>
+        <Icon name={"return"} width={vs(26)} height={vs(26)} color={colors.primary}/>
+      </TouchableOpacity>
+      
       <Text style={styles.title}>PROMOCIONA TU PUBLICACIÓN</Text>
       <Text style={styles.description}>Haz que tu publicación sea lo primero que vean las personas al entrar a MercadoTec</Text>
       <TouchableOpacity onPress={() => setShowInfo(!showInfo)}>
