@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {vs, s} from "react-native-size-matters";
 import { useNavigation } from '@react-navigation/native';
+import { doc, getFirestore, getDoc } from 'firebase/firestore'
 
 import { colors, templates } from '../StyleVariables'
 
@@ -23,38 +24,18 @@ const PromotePost = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupInfo, setPopupInfo] = useState({index: 0, price: 0});
 
-  const promotedPosts: any = [
-    {
-      image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
-      title: 'Lorem ipsum dolor sit',
-      index: 0,
-      price: 35
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
-      title: 'Lorem ipsum dolor sit',
-      index: 1,
-      price: 30
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
-      title: 'Lorem ipsum dolor sit',
-      index: 2,
-      price: 25
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
-      title: 'Lorem ipsum dolor sit',
-      index: 3,
-      price: 20
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
-      title: 'Lorem ipsum dolor sit',
-      index: 4,
-      price: 15
-    }
-  ]
+  const [promotedPosts, setPromotedPosts] = useState([]);
+
+  const GetPromotedPosts = async () => {
+    let docSnap = await getDoc(doc(getFirestore(), "Products", "Promoted"));
+    if(!docSnap.exists()) return;
+    let data = docSnap.data();
+    setPromotedPosts(data.Posts);
+  }
+
+  useEffect(() => {
+    GetPromotedPosts();
+  })
 
   return (
     <View style={styles.container}>
