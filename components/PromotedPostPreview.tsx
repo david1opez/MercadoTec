@@ -32,7 +32,7 @@ const PromotedPostPreview = ({onPress, image, title, index, price}: PromotedPost
                 <Text style={styles.price}>${price}</Text>
                 <Text style={styles.priceSubtitle}>Oferta mínima</Text>
             </View>
-            <TouchableOpacity onPress={() => onPress}>
+            <TouchableOpacity onPress={() => onPress()}>
                 <Text style={styles.buyButton}>COMPRAR</Text>
             </TouchableOpacity>
         </View>
