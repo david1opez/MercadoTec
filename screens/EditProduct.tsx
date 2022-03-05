@@ -413,10 +413,7 @@ const EditProduct = () => {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.promoteButton}
-          onPress={() => {
-            alert('Esta función estará diponible a partir de la próxima semana :D')
-            // navigation.navigate('PromotePost')
-          }}
+          onPress={() => {navigation.navigate('PromotePost')}}
         >
           <Text style={styles.promoteButtonText}>¡PROMOCIONA LO QUE VENDES!</Text>
         </TouchableOpacity>
