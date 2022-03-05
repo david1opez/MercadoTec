@@ -38,6 +38,17 @@ export default {
       MESSAGINGSENDERID: process.env.MESSAGINGSENDERID,
       APPID: process.env.APPID,
       MEASUREMENTID: process.env.MEASUREMENTID,
+      PUBLISHABLEKEY: process.env.PUBLISHABLEKEY,
+      SECRETKEY: process.env.SECRETKEY
     },
+    plugins: [
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.david1opez.mercadotec",
+          "enableGooglePay": true,
+        }
+      ]
+    ]
   }
 };

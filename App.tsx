@@ -7,6 +7,7 @@ import { LogBox } from 'react-native';
 import {initializeApp} from 'firebase/app';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 /* === SCREENS === */
 import Home from "./screens/Home";
@@ -78,18 +79,20 @@ export default function App() {
   }
 
   return(
-  <NavigationContainer>
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="ProductInfo" component={ProductInfo} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      <Stack.Screen name="RegisterUser" component={RegisterUser} />
-      <Stack.Screen name="RegisterProduct" component={RegisterProduct} />
-      <Stack.Screen name="RegisterItems" component={RegisterItems} />
-      <Stack.Screen name="EditProduct" component={EditProduct} />
-      <Stack.Screen name="PromotePost" component={PromotePost} />
-    </Stack.Navigator>
-  </NavigationContainer>
+  <StripeProvider publishableKey={Constants?.manifest?.extra?.PUBLISHABLEKEY}>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="ProductInfo" component={ProductInfo} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="RegisterUser" component={RegisterUser} />
+        <Stack.Screen name="RegisterProduct" component={RegisterProduct} />
+        <Stack.Screen name="RegisterItems" component={RegisterItems} />
+        <Stack.Screen name="EditProduct" component={EditProduct} />
+        <Stack.Screen name="PromotePost" component={PromotePost} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </StripeProvider>
   );
 }
