@@ -58,7 +58,6 @@ const PromotePost = () => {
         showInfo && (
           <View style={styles.infoContainer}>
             <Text style={styles.infoDescription}>
-              {"\n"}
               * Hay 5 lugares en las publicaciones promocionadas de la aplicación y tú puedes comprar alguno de estos lugares para mostrar lo que vendes.
               {"\n"}{"\n"}
               * Los precios de cada publicación van de $15 a $35 al inicio de cada semana, pero va aumentando conforme a las ofertas que hacen los demás.
@@ -66,7 +65,6 @@ const PromotePost = () => {
               * Si quieres un lugar en las publicaciones promocionadas, pero ya está tomado, puedes hacer una oferta más alta y comprar el lugar qué prefieras
               {"\n"}{"\n"}
               * Entre más alta sea tú oferta más tiempo durará en las publicaciones promocionadas :)
-              {"\n"}{"\n"}
             </Text>
           </View>
         )
@@ -120,7 +118,7 @@ const styles = StyleSheet.create({
     fontSize: vs(25),
     lineHeight: vs(35),
     color: colors.primary,
-    marginTop: vs(30),
+    marginTop: vs(55),
     marginBottom: vs(10),
   },
   description: {
@@ -136,6 +134,7 @@ const styles = StyleSheet.create({
     fontSize: vs(10),
     color: colors.primary,
     textDecorationLine: 'underline',
+    marginBottom: vs(20)
   },
   infoContainer: {
     marginLeft: s(10),
@@ -145,6 +144,8 @@ const styles = StyleSheet.create({
     fontSize: vs(9),
     lineHeight: vs(12),
     color: colors.primary,
+    marginTop: vs(-10),
+    marginBottom: vs(25),
   },
   scrollContainer: {},
 })
