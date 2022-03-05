@@ -28,13 +28,13 @@ const PromotePost = () => {
       image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
       title: 'Lorem ipsum dolor sit',
       index: 0,
-      price: 15
+      price: 35
     },
     {
       image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
       title: 'Lorem ipsum dolor sit',
       index: 1,
-      price: 20
+      price: 30
     },
     {
       image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
@@ -46,13 +46,13 @@ const PromotePost = () => {
       image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
       title: 'Lorem ipsum dolor sit',
       index: 3,
-      price: 30
+      price: 20
     },
     {
       image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
       title: 'Lorem ipsum dolor sit',
       index: 4,
-      price: 35
+      price: 15
     }
   ]
 
@@ -85,7 +85,7 @@ const PromotePost = () => {
       }
 
       <View style={styles.scrollContainer}>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {
             promotedPosts.map((post: any, index: number) => {
               return(
@@ -132,12 +132,12 @@ const styles = StyleSheet.create({
     fontSize: vs(25),
     lineHeight: vs(35),
     color: colors.primary,
-    marginTop: vs(55),
-    marginBottom: vs(10),
+    marginTop: vs(40),
+    marginBottom: vs(5),
   },
   description: {
     fontFamily: 'GorditaRegular',
-    fontSize: vs(10),
+    fontSize: vs(9),
     lineHeight: vs(12),
     color: colors.primary,
     paddingRight: s(40),
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     lineHeight: vs(12),
     color: colors.primary,
     marginTop: vs(-10),
-    marginBottom: vs(25),
+    marginBottom: vs(20),
   },
   scrollContainer: {},
 })
