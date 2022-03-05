@@ -6,7 +6,7 @@ import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import * as Linking from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 
-import{ colors } from "../StyleVariables";
+import{ colors, templates } from "../StyleVariables";
 
 // COMPONENTS
 import Item from '../components/Item';
@@ -63,7 +63,7 @@ const ProductInfo = ({route}: any) => {
 
   return (
     <View>
-      <TouchableOpacity style={styles.returnIcon} onPress={() => {navigation.navigate("Home")}}>
+      <TouchableOpacity style={templates.returnIcon} onPress={() => {navigation.navigate("Home")}}>
         <Icon name={"return"} width={vs(26)} height={vs(26)} color={"#FFF"}/>
       </TouchableOpacity>
 
@@ -128,14 +128,6 @@ const ProductInfo = ({route}: any) => {
 export default ProductInfo
 
 const styles = StyleSheet.create({
-  returnIcon: {
-    width: vs(26),
-    height: vs(26),
-    position: 'absolute',
-    top: vs(35),
-    right: s(15),
-    zIndex: 1,
-  },
   mainImage: {
     width: '100%',
     height: vs(250),
