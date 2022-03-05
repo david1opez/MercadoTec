@@ -1,5 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import React, {useState} from 'react'
+import {vs, s} from "react-native-size-matters";
+
+import { colors } from '../StyleVariables'
 
 // COMPONENTS
 import PromotedPostPreview from '../components/PromotedPostPreview'
@@ -45,11 +48,29 @@ const PromotePost = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>PROMOCIONA TU{"\n"}PUBLICACIÓN</Text>
+      <Text style={styles.title}>PROMOCIONA TU PUBLICACIÓN</Text>
       <Text style={styles.description}>Haz que tu publicación sea lo primero que vean las personas al entrar a MercadoTec</Text>
       <TouchableOpacity onPress={() => setShowInfo(!showInfo)}>
         <Text style={styles.moreInfoButton}>¿Cómo funciona?</Text>
       </TouchableOpacity>
+
+      {
+        showInfo && (
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoDescription}>
+              {"\n"}
+              * Hay 5 lugares en las publicaciones promocionadas de la aplicación y tú puedes comprar alguno de estos lugares para mostrar lo que vendes.
+              {"\n"}{"\n"}
+              * Los precios de cada publicación van de $15 a $35 al inicio de cada semana, pero va aumentando conforme a las ofertas que hacen los demás.
+              {"\n"}{"\n"}
+              * Si quieres un lugar en las publicaciones promocionadas, pero ya está tomado, puedes hacer una oferta más alta y comprar el lugar qué prefieras
+              {"\n"}{"\n"}
+              * Entre más alta sea tú oferta más tiempo durará en las publicaciones promocionadas :)
+              {"\n"}{"\n"}
+            </Text>
+          </View>
+        )
+      }
 
       <View style={styles.scrollContainer}>
         <ScrollView>
@@ -89,9 +110,41 @@ const PromotePost = () => {
 export default PromotePost
 
 const styles = StyleSheet.create({
-  container: {},
-  title: {},
-  description: {},
-  moreInfoButton: {},
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  title: {
+    fontFamily: 'GorditaBold',
+    fontSize: vs(25),
+    lineHeight: vs(35),
+    color: colors.primary,
+    marginTop: vs(30),
+    marginBottom: vs(10),
+  },
+  description: {
+    fontFamily: 'GorditaRegular',
+    fontSize: vs(10),
+    lineHeight: vs(12),
+    color: colors.primary,
+    paddingRight: s(40),
+    marginBottom: vs(15)
+  },
+  moreInfoButton: {
+    fontFamily: 'GorditaMedium',
+    fontSize: vs(10),
+    color: colors.primary,
+    textDecorationLine: 'underline',
+  },
+  infoContainer: {
+    marginLeft: s(10),
+  },
+  infoDescription: {
+    fontFamily: 'GorditaRegular',
+    fontSize: vs(9),
+    lineHeight: vs(12),
+    color: colors.primary,
+  },
   scrollContainer: {},
 })
