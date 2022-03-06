@@ -29,22 +29,24 @@ export default FreeTrialPopup
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: colors.primary,
+        backgroundColor: "#FFF",
         borderRadius: 5,
-        paddingVertical: vs(7),
+        paddingVertical: vs(10),
         alignItems: 'center',
         justifyContent: 'center',
-        width: '95%',
+        width: '105%',
         alignSelf: 'center',
-        marginTop: vs(50)
+        marginTop: vs(10),
+        borderWidth: 2,
+        borderColor: colors.primary,
     },
     header: {
-        color: "#FFF",
+        color: colors.primary,
         fontFamily: "GorditaMedium",
         fontSize: s(11),
     },
     description: {
-        color: "#FFF",
+        color: colors.primary,
         textAlign: "center",
         fontFamily: "GorditaRegular",
         fontSize: vs(8),
@@ -52,14 +54,14 @@ const styles = StyleSheet.create({
         marginVertical: vs(5),
     },
     button: {
-        backgroundColor: "#FFF",
+        backgroundColor: colors.primary,
         paddingHorizontal: s(15),
         paddingVertical: vs(2),
         borderRadius: 3,
         marginTop: vs(5),
     },
     buttonText: {
-        color: colors.primary,
+        color: "#FFF",
         fontFamily: "GorditaBold",
         fontSize: vs(8),
     },

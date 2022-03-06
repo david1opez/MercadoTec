@@ -262,17 +262,15 @@ const EditProduct = () => {
 
       </View>
 
+      <Text style={styles.title}>Editar publicación</Text>
+      <Text style={[styles.views, freeTrial && {top: vs(90)}]}>{views} {views == 1 ? 'visita' : 'visitas'}</Text>
+
+      <View style={styles.scrollContainer}>
       {
         freeTrial && (
           <FreeTrialPopup daysLeft={Math.floor(cutOffDate - day)}/>
         )
       }
-
-      <Text style={[styles.title, freeTrial && {marginTop: vs(10)}]}>Editar publicación</Text>
-      <Text style={[styles.views, freeTrial && {top: vs(170)}]}>{views} visitas</Text>
-
-
-      <View style={styles.scrollContainer}>
         <ScrollView>          
           <TouchableOpacity style={styles.imageInputContainer}
             onPress={async () => {
@@ -404,7 +402,7 @@ const EditProduct = () => {
 
       </View>
 
-      <View style={[styles.mainButtonsContainer, freeTrial && {marginTop: vs(10)}]}>
+      <View style={styles.mainButtonsContainer}>
         <TouchableOpacity style={styles.saveButton}
           onPress={() => {
             if(isLoading) return;
@@ -427,7 +425,7 @@ const EditProduct = () => {
           <Text style={styles.promoteButtonText}>¡PROMOCIONA LO QUE VENDES!</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.logOutButton, freeTrial && {bottom: vs(-25)}]}
+        <TouchableOpacity style={styles.logOutButton}
           onPress={() => {
             signOut(auth)
             .then(() => {
@@ -493,7 +491,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width: s(320),
-    height: vs(400),
+    height: vs(430),
     marginLeft: s(15),
   },
   itemsScrollContainer: {
@@ -504,7 +502,6 @@ const styles = StyleSheet.create({
     fontSize: vs(20),
     color: colors.primary,
     marginLeft: s(15),
-    marginTop: vs(20),
   },
   inputContainer: {
     alignItems: 'flex-start',
