@@ -92,7 +92,7 @@ const PromotePost = () => {
           <PromotePostPopup
             onClose={() => setShowPopup(false)}
             index={popupInfo.index}
-            price={popupInfo.price}
+            minOffer={popupInfo.price}
           />
         )
       }
