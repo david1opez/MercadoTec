@@ -7,6 +7,7 @@ import { LogBox } from 'react-native';
 import {initializeApp} from 'firebase/app';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 /* === SCREENS === */
 import Home from "./screens/Home";
@@ -18,6 +19,7 @@ import RegisterItems from "./screens/RegisterItems";
 import EditProduct from "./screens/EditProduct";
 import PromotePost from './screens/PromotePost';
 import ForgotPassword from './screens/ForgotPassword';
+import Subscription from './screens/Subscription';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -28,7 +30,8 @@ export type RootStackParamList = {
   RegisterItems: undefined,
   EditProduct: undefined,
   PromotePost: undefined,
-  ForgotPassword: undefined
+  ForgotPassword: undefined,
+  Subscription: undefined,
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -78,18 +81,21 @@ export default function App() {
   }
 
   return(
-  <NavigationContainer>
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="ProductInfo" component={ProductInfo} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      <Stack.Screen name="RegisterUser" component={RegisterUser} />
-      <Stack.Screen name="RegisterProduct" component={RegisterProduct} />
-      <Stack.Screen name="RegisterItems" component={RegisterItems} />
-      <Stack.Screen name="EditProduct" component={EditProduct} />
-      <Stack.Screen name="PromotePost" component={PromotePost} />
-    </Stack.Navigator>
-  </NavigationContainer>
+  <StripeProvider publishableKey={Constants?.manifest?.extra?.PUBLISHABLEKEY}>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="ProductInfo" component={ProductInfo} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="RegisterUser" component={RegisterUser} />
+        <Stack.Screen name="RegisterProduct" component={RegisterProduct} />
+        <Stack.Screen name="RegisterItems" component={RegisterItems} />
+        <Stack.Screen name="EditProduct" component={EditProduct} />
+        <Stack.Screen name="PromotePost" component={PromotePost} />
+        <Stack.Screen name="Subscription" component={Subscription} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </StripeProvider>
   );
 }

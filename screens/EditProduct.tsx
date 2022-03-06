@@ -7,7 +7,6 @@ import SelectImage from '../hooks/SelectImage';
 import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
 import convertUriToBlob from '../hooks/convertUriToBlob';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import * as Network from 'expo-network';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {colors, templates} from "../StyleVariables";
@@ -16,6 +15,8 @@ import {colors, templates} from "../StyleVariables";
 import AddProductPopup from '../components/AddProductPopup';
 import Icon from '../assets/icons';
 import ItemPreview from '../components/ItemPreview';
+import FreeTrialPopup from '../components/FreeTrialPopup';
+import NoConnectionComponent from '../components/NoConnectionComponent';
 
 // TYPES
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -27,27 +28,35 @@ type Item = {
   price: number
   image: string
 }
+
+type ContactOption = 'Whatsapp' | 'Messenger' | 'Telegram';
+
 type EditProductScreenProp = StackNavigationProp<RootStackParamList, 'EditProduct'>;
 
 const EditProduct = () => {
   const navigation = useNavigation<EditProductScreenProp>();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isConnected, setIsConnected] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isImageChanged, setIsImageChanged] = useState(false);
-  const [isInfoUploading, setIsInfoUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [isConnected, setIsConnected] = useState<Boolean>(true);
+  const [isOpen, setIsOpen] = useState<Boolean>(false);
+  const [isImageChanged, setIsImageChanged] = useState<Boolean>(false);
+  const [isInfoUploading, setIsInfoUploading] = useState<Boolean>(false);
 
-  const [image, setImage]: any = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [items, setItems]: any = useState([]);
+  const [image, setImage] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [items, setItems] = useState<Item[]>([]);
   
-  const [contactOption, setContactOption] = useState('');
-  const [contactLink, setContactLink] = useState('');
-  const [contactInputValue, setContactInputValue] = useState('');
+  const [contactOption, setContactOption] = useState<ContactOption>('Whatsapp');
+  const [contactLink, setContactLink] = useState<string>('');
+  const [contactInputValue, setContactInputValue] = useState<string>('');
 
-  const [views, setViews] = useState(0);
+  const [views, setViews] = useState<number>(0);
+
+  const [freeTrial, setFreeTrial] = useState<boolean>(false);
+  const [cutOffDate, setCutOffDate] = useState<number>(0);
+  const [expired, setExpired] = useState<boolean>(false);
+  const day = new Date().getTime() / 86400000;
 
   const db = getFirestore();
   const auth = getAuth();
@@ -156,7 +165,7 @@ const EditProduct = () => {
     })
   }
 
-  useEffect(() => {
+  const getProductInfo = async () => {
     getDoc(doc(db, "Products", uid))
     .then((result) => {
       if(!result.data()) {
@@ -195,6 +204,25 @@ const EditProduct = () => {
 
       setIsLoading(false);
     })
+  }
+
+  const subscriptionStatus = async () => {
+    const user = await getDoc(doc(db, "Users", uid));
+
+    let freetrial = user.data()?.freeTrial;
+    let cutOffDate = user.data()?.cutOffDate;
+
+    setFreeTrial(freetrial);
+    setCutOffDate(cutOffDate);
+    
+    if(day >= cutOffDate) {
+      setExpired(true);
+    }
+  }
+
+  useEffect(() => {
+    getProductInfo();
+    subscriptionStatus();
   }, [])
 
   if(isLoading){
@@ -203,39 +231,14 @@ const EditProduct = () => {
 
   if(!isConnected) {
     return (
-      <View style={styles.noWificontainer}>
+      <NoConnectionComponent onConnectionStatusChange={(status) => setIsConnected(status)}/>
+    )
+  }
 
-        <View style={templates.logoContainer}>
-
-          <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
-          
-          <View style={styles.logoTextContainer}>
-            <Text style={styles.UpperLogoText}>Mercado</Text>
-            <Text style={styles.BottomLogoText}>Tec</Text>
-          </View>
-
-        </View>
-
-        <Text style={styles.wifiTitle}>No hay conexión a internet :(</Text>
-
-        <TouchableOpacity
-          onPress={async () => {
-            setIsLoading(true);
-            const connection: any = await Network.getNetworkStateAsync();
-            setIsConnected(connection.isConnected)
-
-            setIsLoading(false);
-          }}
-          style={styles.retryButton}
-        >
-          {
-            isLoading ? (
-              <ActivityIndicator size="small" color={"#FFF"} />
-            ) : (
-              <Text style={styles.retryButtonText}>Reintentar</Text>
-            )
-          }
-        </TouchableOpacity>
+  if(expired) {
+    return (
+      <View>
+        <Text>asfhaosjdkjhaskfhalskfjlkh</Text>
       </View>
     )
   }
@@ -260,10 +263,14 @@ const EditProduct = () => {
       </View>
 
       <Text style={styles.title}>Editar publicación</Text>
-      <Text style={styles.views}>{views} visitas</Text>
-
+      <Text style={[styles.views, freeTrial && {top: vs(90)}]}>{views} {views == 1 ? 'visita' : 'visitas'}</Text>
 
       <View style={styles.scrollContainer}>
+      {
+        freeTrial && (
+          <FreeTrialPopup daysLeft={Math.floor(cutOffDate - day)}/>
+        )
+      }
         <ScrollView>          
           <TouchableOpacity style={styles.imageInputContainer}
             onPress={async () => {
@@ -413,10 +420,7 @@ const EditProduct = () => {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.promoteButton}
-          onPress={() => {
-            alert('Esta función estará diponible a partir de la próxima semana :D')
-            // navigation.navigate('PromotePost')
-          }}
+          onPress={() => {navigation.navigate('PromotePost')}}
         >
           <Text style={styles.promoteButtonText}>¡PROMOCIONA LO QUE VENDES!</Text>
         </TouchableOpacity>
@@ -453,7 +457,6 @@ const EditProduct = () => {
       />
     )}
 
-
     </View>
   )
 }
@@ -488,7 +491,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width: s(320),
-    height: vs(400),
+    height: vs(430),
     marginLeft: s(15),
   },
   itemsScrollContainer: {
@@ -499,7 +502,6 @@ const styles = StyleSheet.create({
     fontSize: vs(20),
     color: colors.primary,
     marginLeft: s(15),
-    marginTop: vs(20),
   },
   inputContainer: {
     alignItems: 'flex-start',
