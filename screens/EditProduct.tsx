@@ -27,27 +27,30 @@ type Item = {
   price: number
   image: string
 }
+
+type ContactOption = 'Whatsapp' | 'Messenger' | 'Telegram';
+
 type EditProductScreenProp = StackNavigationProp<RootStackParamList, 'EditProduct'>;
 
 const EditProduct = () => {
   const navigation = useNavigation<EditProductScreenProp>();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isConnected, setIsConnected] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isImageChanged, setIsImageChanged] = useState(false);
-  const [isInfoUploading, setIsInfoUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [isConnected, setIsConnected] = useState<Boolean>(true);
+  const [isOpen, setIsOpen] = useState<Boolean>(false);
+  const [isImageChanged, setIsImageChanged] = useState<Boolean>(false);
+  const [isInfoUploading, setIsInfoUploading] = useState<Boolean>(false);
 
-  const [image, setImage]: any = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [items, setItems]: any = useState([]);
+  const [image, setImage] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [items, setItems] = useState<Item[]>([]);
   
-  const [contactOption, setContactOption] = useState('');
-  const [contactLink, setContactLink] = useState('');
-  const [contactInputValue, setContactInputValue] = useState('');
+  const [contactOption, setContactOption] = useState<ContactOption>('Whatsapp');
+  const [contactLink, setContactLink] = useState<string>('');
+  const [contactInputValue, setContactInputValue] = useState<string>('');
 
-  const [views, setViews] = useState(0);
+  const [views, setViews] = useState<number>(0);
 
   const db = getFirestore();
   const auth = getAuth();
