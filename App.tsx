@@ -19,6 +19,7 @@ import RegisterItems from "./screens/RegisterItems";
 import EditProduct from "./screens/EditProduct";
 import PromotePost from './screens/PromotePost';
 import ForgotPassword from './screens/ForgotPassword';
+import Subscription from './screens/Subscription';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -29,7 +30,8 @@ export type RootStackParamList = {
   RegisterItems: undefined,
   EditProduct: undefined,
   PromotePost: undefined,
-  ForgotPassword: undefined
+  ForgotPassword: undefined,
+  Subscription: undefined,
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -91,6 +93,7 @@ export default function App() {
         <Stack.Screen name="RegisterItems" component={RegisterItems} />
         <Stack.Screen name="EditProduct" component={EditProduct} />
         <Stack.Screen name="PromotePost" component={PromotePost} />
+        <Stack.Screen name="Subscription" component={Subscription} />
       </Stack.Navigator>
     </NavigationContainer>
   </StripeProvider>
