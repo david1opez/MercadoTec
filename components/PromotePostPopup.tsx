@@ -127,23 +127,24 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: 'GorditaRegular',
-    fontSize: vs(9),
+    fontSize: vs(8),
     lineHeight: vs(12),
     color: "#FFF",
     marginTop: vs(10),
-    paddingHorizontal: s(70),
+    paddingHorizontal: s(80),
     textAlign: 'center',
   },
   button: {
     backgroundColor: '#FFF',
     borderRadius: 3,
-    marginVertical: vs(20),
+    marginTop: vs(10),
+    marginBottom: vs(25),
   },
   buttonText: {
     fontFamily: 'GorditaBold',
     fontSize: vs(12),
     color: colors.primary,
-    paddingHorizontal: s(20),
+    paddingHorizontal: s(25),
     paddingVertical: vs(3),
   },
   footer: {
