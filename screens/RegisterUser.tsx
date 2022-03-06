@@ -81,7 +81,7 @@ const RegisterUser = () => {
               name: name.trim(),
               notificationToken: token,
               freeTrial: true,
-              cutOffDate: currentDay + 30,
+              cutOffDate: currentDay + 15,
             })
           }
           else {
