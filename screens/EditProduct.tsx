@@ -7,7 +7,6 @@ import SelectImage from '../hooks/SelectImage';
 import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
 import convertUriToBlob from '../hooks/convertUriToBlob';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import * as Network from 'expo-network';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {colors, templates} from "../StyleVariables";
@@ -16,6 +15,8 @@ import {colors, templates} from "../StyleVariables";
 import AddProductPopup from '../components/AddProductPopup';
 import Icon from '../assets/icons';
 import ItemPreview from '../components/ItemPreview';
+import FreeTrialPopup from '../components/FreeTrialPopup';
+import NoConnectionComponent from '../components/NoConnectionComponent';
 
 // TYPES
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -51,6 +52,11 @@ const EditProduct = () => {
   const [contactInputValue, setContactInputValue] = useState<string>('');
 
   const [views, setViews] = useState<number>(0);
+
+  const [freeTrial, setFreeTrial] = useState<boolean>(false);
+  const [cutOffDate, setCutOffDate] = useState<number>(0);
+  const [expired, setExpired] = useState<boolean>(false);
+  const day = new Date().getTime() / 86400000;
 
   const db = getFirestore();
   const auth = getAuth();
@@ -159,7 +165,7 @@ const EditProduct = () => {
     })
   }
 
-  useEffect(() => {
+  const getProductInfo = async () => {
     getDoc(doc(db, "Products", uid))
     .then((result) => {
       if(!result.data()) {
@@ -198,6 +204,25 @@ const EditProduct = () => {
 
       setIsLoading(false);
     })
+  }
+
+  const subscriptionStatus = async () => {
+    const user = await getDoc(doc(db, "Users", uid));
+
+    let freetrial = user.data()?.freeTrial;
+    let cutOffDate = user.data()?.cutOffDate;
+
+    setFreeTrial(freetrial);
+    setCutOffDate(cutOffDate);
+    
+    if(day >= cutOffDate) {
+      setExpired(true);
+    }
+  }
+
+  useEffect(() => {
+    getProductInfo();
+    subscriptionStatus();
   }, [])
 
   if(isLoading){
@@ -206,39 +231,14 @@ const EditProduct = () => {
 
   if(!isConnected) {
     return (
-      <View style={styles.noWificontainer}>
+      <NoConnectionComponent onConnectionStatusChange={(status) => setIsConnected(status)}/>
+    )
+  }
 
-        <View style={templates.logoContainer}>
-
-          <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
-          
-          <View style={styles.logoTextContainer}>
-            <Text style={styles.UpperLogoText}>Mercado</Text>
-            <Text style={styles.BottomLogoText}>Tec</Text>
-          </View>
-
-        </View>
-
-        <Text style={styles.wifiTitle}>No hay conexión a internet :(</Text>
-
-        <TouchableOpacity
-          onPress={async () => {
-            setIsLoading(true);
-            const connection: any = await Network.getNetworkStateAsync();
-            setIsConnected(connection.isConnected)
-
-            setIsLoading(false);
-          }}
-          style={styles.retryButton}
-        >
-          {
-            isLoading ? (
-              <ActivityIndicator size="small" color={"#FFF"} />
-            ) : (
-              <Text style={styles.retryButtonText}>Reintentar</Text>
-            )
-          }
-        </TouchableOpacity>
+  if(expired) {
+    return (
+      <View>
+        <Text>asfhaosjdkjhaskfhalskfjlkh</Text>
       </View>
     )
   }
@@ -262,8 +262,14 @@ const EditProduct = () => {
 
       </View>
 
-      <Text style={styles.title}>Editar publicación</Text>
-      <Text style={styles.views}>{views} visitas</Text>
+      {
+        freeTrial && (
+          <FreeTrialPopup daysLeft={Math.floor(cutOffDate - day)}/>
+        )
+      }
+
+      <Text style={[styles.title, freeTrial && {marginTop: vs(10)}]}>Editar publicación</Text>
+      <Text style={[styles.views, freeTrial && {top: vs(170)}]}>{views} visitas</Text>
 
 
       <View style={styles.scrollContainer}>
@@ -398,7 +404,7 @@ const EditProduct = () => {
 
       </View>
 
-      <View style={styles.mainButtonsContainer}>
+      <View style={[styles.mainButtonsContainer, freeTrial && {marginTop: vs(10)}]}>
         <TouchableOpacity style={styles.saveButton}
           onPress={() => {
             if(isLoading) return;
@@ -421,7 +427,7 @@ const EditProduct = () => {
           <Text style={styles.promoteButtonText}>¡PROMOCIONA LO QUE VENDES!</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logOutButton}
+        <TouchableOpacity style={[styles.logOutButton, freeTrial && {bottom: vs(-25)}]}
           onPress={() => {
             signOut(auth)
             .then(() => {
@@ -452,7 +458,6 @@ const EditProduct = () => {
         }}
       />
     )}
-
 
     </View>
   )
