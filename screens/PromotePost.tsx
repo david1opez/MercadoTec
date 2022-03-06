@@ -35,7 +35,7 @@ const PromotePost = () => {
 
   useEffect(() => {
     GetPromotedPosts();
-  })
+  }, [])
 
   return (
     <View style={styles.container}>

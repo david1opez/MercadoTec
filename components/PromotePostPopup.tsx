@@ -2,7 +2,8 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React, {useState} from 'react'
 import { vs, s } from 'react-native-size-matters';
 
-import { colors, templates } from '../StyleVariables'
+import { colors } from '../StyleVariables'
+
 // COMPONENTS
 import Icon from '../assets/icons';
 
@@ -21,10 +22,10 @@ const PromotePostPopup = ({onClose, index, minOffer}: PromotePostPopupProps) => 
     <View style={styles.container}>
       <View style={styles.popupContainer}>
         <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
-          <Icon name="close" width={vs(20)} height={vs(20)} color={"#FFF"} />
+          <Icon name="close" width={vs(17)} height={vs(17)} color={"#FFF"} />
         </TouchableOpacity>
 
-        <Text>COMPRAR LUGAR #{index}</Text>
+        <Text style={styles.title}>COMPRAR LUGAR #{index+1}</Text>
 
         <View style={styles.inputContainer}>
           <Text style={styles.dollarSign}>$</Text>
@@ -74,19 +75,84 @@ const styles = StyleSheet.create({
     left: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '115%',
+    width: s(350),
     height: vs(700),
     zIndex: 1,
   },
-  popupContainer: {},
-  closeButton: {},
-  title: {},
-  inputContainer: {},
-  input: {},
-  dollarSign: {},
-  currency: {},
-  subtitle: {},
-  button: {},
-  buttonText: {},
-  footer: {},
+  popupContainer: {
+    backgroundColor: colors.primary,
+    borderRadius: 5,
+    width: '93%',
+    alignItems: 'center',
+    paddingVertical: vs(15),
+  },
+  closeButton: {
+    position: 'absolute',
+    top: vs(10),
+    right: vs(10),
+  },
+  title: {
+    fontFamily: 'GorditaBold',
+    fontSize: vs(17),
+    color: "#FFF",
+    marginTop: vs(5),
+    marginBottom: vs(20),
+    textDecorationLine: 'underline',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
+    fontFamily: 'GorditaBold',
+    fontSize: vs(25),
+    lineHeight: vs(35),
+    color: "#FFF",
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFF',
+    textAlign: 'center',
+    width: s(110),
+  },
+  dollarSign: {
+    fontFamily: 'GorditaMedium',
+    fontSize: vs(15),
+    color: "#FFF",
+  },
+  currency: {
+    fontFamily: 'GorditaMedium',
+    fontSize: vs(7),
+    color: "#FFF",
+    marginTop: vs(23),
+    marginLeft: vs(4),
+  },
+  subtitle: {
+    fontFamily: 'GorditaRegular',
+    fontSize: vs(9),
+    lineHeight: vs(12),
+    color: "#FFF",
+    marginTop: vs(10),
+    paddingHorizontal: s(70),
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#FFF',
+    borderRadius: 3,
+    marginVertical: vs(20),
+  },
+  buttonText: {
+    fontFamily: 'GorditaBold',
+    fontSize: vs(12),
+    color: colors.primary,
+    paddingHorizontal: s(20),
+    paddingVertical: vs(3),
+  },
+  footer: {
+    fontFamily: 'GorditaRegular',
+    fontSize: vs(7),
+    lineHeight: vs(10),
+    color: "#FFF",
+    textAlign: 'center',
+    paddingHorizontal: s(10),
+    opacity: 0.75,
+  },
 })
