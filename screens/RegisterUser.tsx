@@ -66,6 +66,8 @@ const RegisterUser = () => {
       let link: string;
 
       let phoneNumber = contact.replace(/\s/g, '').replace(/[^0-9]/g, '');
+      
+      let currentDay = new Date().getTime() / 86400000;
 
       if(contactOption == 'Whatsapp') link = `https://wa.me/${phoneNumber}`;
       else if(contactOption == 'Telegram') link = `https://telegram.me/${contact.replace(/\s/g, '')}`;
@@ -78,6 +80,8 @@ const RegisterUser = () => {
             setDoc(doc(db, "Users", uid), {
               name: name.trim(),
               notificationToken: token,
+              freeTrial: true,
+              cutOffDate: currentDay + 30,
             })
           }
           else {
