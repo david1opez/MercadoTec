@@ -10,6 +10,7 @@ import { colors, templates } from '../StyleVariables'
 import PromotedPostPreview from '../components/PromotedPostPreview'
 import PromotePostPopup from '../components/PromotePostPopup'
 import Icon from '../assets/icons';
+import PaymentPopup from '../components/PaymentPopup';
 
 // TYPES
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -21,8 +22,10 @@ const PromotePost = () => {
   const navigation = useNavigation<PromotePostScreenProp>();
   
   const [showInfo, setShowInfo] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showBuyPopup, setShowBuyPopup] = useState(false);
   const [popupInfo, setPopupInfo] = useState({index: 0, price: 0});
+  const [paymentPopup, setPaymentPopup] = useState(false);
+  const [price, setPrice] = useState(0);
 
   const [promotedPosts, setPromotedPosts] = useState([]);
 
@@ -77,7 +80,7 @@ const PromotePost = () => {
                   index={index}
                   title={post.title}
                   onPress={() => {
-                    setShowPopup(true);
+                    setShowBuyPopup(true);
                     setPopupInfo({index: index, price: post.price});
                   }}
                 />
@@ -88,11 +91,27 @@ const PromotePost = () => {
       </View>
 
       {
-        showPopup && (
+        showBuyPopup && (
           <PromotePostPopup
-            onClose={() => setShowPopup(false)}
+            onClose={() => setShowBuyPopup(false)}
             index={popupInfo.index}
             minOffer={popupInfo.price}
+            onBuy={(price) => {
+              setShowBuyPopup(false);
+              setPaymentPopup(true);
+              setPrice(price);
+            }}
+          />
+        )
+      }
+
+      {
+        paymentPopup && (
+          <PaymentPopup
+            onClose={() => setPaymentPopup(false)}
+            price={price}
+            item={"Publicación promocionada"}
+            onSuccess={() => {}}
           />
         )
       }

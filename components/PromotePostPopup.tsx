@@ -12,10 +12,11 @@ type PromotePostPopupProps = {
   onClose: () => void,
   index: number,
   minOffer: number,
+  onBuy: (price: number) => void,
 }
 
 
-const PromotePostPopup = ({onClose, index, minOffer}: PromotePostPopupProps) => {
+const PromotePostPopup = ({onClose, index, minOffer, onBuy}: PromotePostPopupProps) => {
   const [price, setPrice] = useState(minOffer);
 
   return (
@@ -49,7 +50,10 @@ const PromotePostPopup = ({onClose, index, minOffer}: PromotePostPopupProps) => 
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => {}}
+          onPress={() => {
+            onBuy(price)
+            onClose()
+          }}
         >
           <Text style={styles.buttonText}>COMPRAR</Text>
         </TouchableOpacity>
