@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
 import React, {useState} from 'react'
-
+import {vs, s} from 'react-native-size-matters'
 import {colors} from '../StyleVariables'
 
 // COMPONENTS
 import PaymentMethod from './PaymentMethod'
+import Icon from '../assets/icons';
 
 // TYPES
 type PaymentPopupProps = {
@@ -34,6 +35,10 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
     return (
         <View style={styles.darkBackground}>
         <View style={styles.popupContainer}>
+            <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
+                <Icon name="close" width={vs(17)} height={vs(17)} color={"#FFF"} />
+            </TouchableOpacity>
+
             <Text style={styles.title}>Método de pago</Text>
 
             <PaymentMethod
@@ -141,6 +146,7 @@ export default PaymentPopup
 const styles = StyleSheet.create({
     darkBackground: {},
     popupContainer: {},
+    closeButton: {},
     title: {},
     cardInputsContainer: {},
     cardFlexInputs: {},
