@@ -30,13 +30,13 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
         return true;
     }
 
-    const makePayment = () => {}
+    const makePayment = async () => {}
 
     return (
         <View style={styles.darkBackground}>
         <View style={styles.popupContainer}>
             <TouchableOpacity onPress={() => onClose()} style={styles.closeButton}>
-                <Icon name="close" width={vs(17)} height={vs(17)} color={"#FFF"} />
+                <Icon name="close" width={vs(17)} height={vs(17)} color={colors.primary} />
             </TouchableOpacity>
 
             <Text style={styles.title}>Método de pago</Text>
@@ -73,19 +73,23 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
                         />
 
                         <View style={styles.cardFlexInputs}>
-                            <Text style={styles.placeholder}>Fecha de vencimiento</Text>
-                            <TextInput
-                                style={styles.shortInput}
-                                keyboardType='phone-pad'
-                                onChangeText={(text) => {setExpiryDate(text)}}
-                            />
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.placeholder}>Fecha de vencimiento</Text>
+                                <TextInput
+                                    style={styles.dateInput}
+                                    keyboardType='phone-pad'
+                                    onChangeText={(text) => {setExpiryDate(text)}}
+                                />
+                            </View>
 
-                            <Text style={styles.placeholder}>CVV</Text>
-                            <TextInput
-                                style={styles.shortInput}
-                                keyboardType='phone-pad'
-                                onChangeText={(text) => {setCvv(text)}}
-                            />
+                            <View>
+                                <Text style={styles.placeholder}>CVV</Text>
+                                <TextInput
+                                    style={styles.cvvInput}
+                                    keyboardType='phone-pad'
+                                    onChangeText={(text) => {setCvv(text)}}
+                                />
+                            </View>
                         </View>
                     </View>
                 )
@@ -134,7 +138,13 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
                 }
             </TouchableOpacity>
 
-            <Text style={styles.disclaimer}></Text>
+            <Text style={styles.disclaimer}>
+                Los pagos son manejados mediante Stripe, un
+                Proveedor de servicios PCI de nivel 1, que es el nivel de certificación
+                más exigente dentro de la industria de pagos, además la información es
+                cifrada en reposo con AES-256, por lo qué en MercadoTec manejamos los
+                pagos con los niveles más altos de seguridad.
+            </Text>
 
         </View>
         </View>
@@ -144,22 +154,130 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
 export default PaymentPopup
 
 const styles = StyleSheet.create({
-    darkBackground: {},
-    popupContainer: {},
-    closeButton: {},
-    title: {},
+    darkBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: s(350),
+        height: vs(705),
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        zIndex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    popupContainer: {
+        backgroundColor: '#FFF',
+        borderRadius: 5,
+        width: s(300),
+        paddingVertical: vs(20),
+        paddingHorizontal: s(15),
+    },
+    closeButton: {
+        position: 'absolute',
+        top: vs(10),
+        right: vs(10),
+        zIndex: 2,
+    },
+    title: {
+        color: colors.primary,
+        fontFamily: "GorditaBold",
+        fontSize: vs(14),
+        textDecorationLine: 'underline',
+        marginBottom: vs(8)
+    },
     cardInputsContainer: {},
-    cardFlexInputs: {},
-    input: {},
-    placeholder: {},
-    shortInput: {},
+    cardFlexInputs: {
+        flexDirection: 'row',
+    },
+    inputContainer: {
+        marginRight: s(10),
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: colors.primary,
+        borderRadius: 3,
+        fontSize: vs(11),
+        lineHeight: vs(14),
+        paddingLeft: s(10),
+        paddingVertical: vs(2),
+        fontFamily: "GorditaRegular",
+    },
+    placeholder: {
+        color: colors.primary,
+        fontFamily: "GorditaRegular",
+        fontSize: vs(9),
+        marginTop: vs(10),
+        marginBottom: vs(5),
+    },
+    dateInput: {
+        borderWidth: 1,
+        borderColor: colors.primary,
+        borderRadius: 3,
+        fontSize: vs(11),
+        lineHeight: vs(14),
+        paddingLeft: s(10),
+        fontFamily: "GorditaRegular",
+        width: s(120),
+    },
+    cvvInput: {
+        borderWidth: 1,
+        borderColor: colors.primary,
+        borderRadius: 3,
+        fontSize: vs(11),
+        lineHeight: vs(14),
+        paddingLeft: s(10),
+        fontFamily: "GorditaRegular",
+        width: vs(50),
+    },
     oxxoInputsContainer: {},
-    details: {},
-    div: {},
-    totalContainer: {},
-    total: {},
-    currency: {},
-    button: {},
-    buttonText: {},
-    disclaimer: {},
+    details: {
+        textAlign: "right",
+        fontFamily: "GorditaRegular",
+        color: colors.primary,
+        fontSize: vs(9),
+        marginTop: vs(20),
+    },
+    div: {
+        height: 1,
+        backgroundColor: colors.primary,
+        marginVertical: vs(10),
+    },
+    totalContainer: {
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        justifyContent: 'flex-end',
+    },
+    total: {
+        fontFamily: 'GorditaBold',
+        fontSize: vs(12),
+    },
+    currency: {
+        fontFamily: 'GorditaBold',
+        fontSize: vs(7),
+        marginLeft: s(4),
+        paddingBottom: vs(2),
+    },
+    button: {
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 3,
+        marginHorizontal: s(50),
+        marginTop: s(25),
+    },
+    buttonText: {
+        fontFamily: 'GorditaBold',
+        fontSize: vs(12),
+        color: '#FFF',
+        paddingVertical: vs(3),
+    },
+    disclaimer: {
+        fontFamily: "GorditaRegular",
+        color: colors.primary,
+        fontSize: vs(7),
+        textAlign: "center",
+        lineHeight: vs(9),
+        marginTop: vs(20),
+        opacity: 0.4,
+    },
 })
