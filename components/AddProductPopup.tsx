@@ -98,7 +98,7 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Precio:</Text>
                     <TextInput style={styles.priceInput}
-                        keyboardType='numeric'
+                        keyboardType='phone-pad'
                         onChangeText={(value) => {
                             let formattedPrice = value.replace(/\s/g, '').replace(/[^0-9]/g, '')
                             formattedPrice = formattedPrice == "" ? "0" : formattedPrice;

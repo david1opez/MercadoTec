@@ -180,10 +180,10 @@ const RegisterUser = () => {
           onChangeText={(value) => {
             setContact(value);
           }}
-          autoCapitalize={"none"}
+          autoCapitalize="none"
           placeholder={contactOption == 'Whatsapp' ? '528441234567' : contactOption == 'Telegram' ? 'Nombre de usuario' : 'Nombre de usuario'}
           placeholderTextColor={"rgba(255, 255, 255, 0.5)"}
-          keyboardType={contactOption == 'Whatsapp' ? 'numeric' : 'default'}
+          keyboardType={contactOption == 'Whatsapp' ? 'phone-pad' : 'default'}
           value={contactOption == 'Whatsapp' ? contact.replace(/\s/g, '').replace(/[^0-9]/g, '') : contact.replace(/\s/g, '')}
         />
       </View>

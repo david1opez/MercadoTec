@@ -152,7 +152,7 @@ const RegisterItems = () => {
                 setPrice(parseInt(formattedPrice))
               }}
               value={price.toString() != "NaN" ? price.toString() : "0"}
-              keyboardType='numeric'
+              keyboardType='phone-pad'
             />
           </View>
 
