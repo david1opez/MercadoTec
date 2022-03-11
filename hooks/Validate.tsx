@@ -1,6 +1,5 @@
 // TYPES
 type ValidateUserProps = {
-    name: string,
     email: string,
     password: string,
     contact: string,
@@ -12,8 +11,8 @@ export default async function Validate (type: string, data: ValidateUserProps) {
     else return 0;
 }
 
-const ValidateUser = ({name, email, password, contact, contactOption}: ValidateUserProps) => {
-    if (name.length == 0 || email.length == 0 || password.length == 0) {
+const ValidateUser = ({email, password, contact, contactOption}: ValidateUserProps) => {
+    if (email.length == 0 || password.length == 0) {
         return 1;
     }
     else if (!email.includes('@')) {

@@ -4,16 +4,27 @@ import { s, vs } from 'react-native-size-matters'
 
 import{ colors } from "../StyleVariables";
 
+// TYPES
+type Category = {
+    category: string,
+    activeCategory: string,
+    onChangeCategory: (category: string) => void
+}
 
-const Category = ({name, index, activeCategoryIndex, returnIndex}: {name: string, index: number, activeCategoryIndex: number, returnIndex: Function}) => {
+const Category = ({category, activeCategory, onChangeCategory}: Category) => {
   return (
     <TouchableOpacity
-        style={[activeCategoryIndex == index ? styles.activeCategoryContainer : styles.categoryContainer, {marginLeft: index == 0 ? s(15) : 0}]}
-        onPress={() => returnIndex(index)}
+        style={[
+            activeCategory == category ? styles.activeCategoryContainer : styles.categoryContainer,
+            {marginLeft: category == "Todos" ? s(15) : 0}
+        ]}
+        onPress={() => onChangeCategory(category)}
     >
-        <Text style={activeCategoryIndex == index ? styles.activeCategoryText : styles.categoryText}>
-            {name}
+
+        <Text style={activeCategory == category ? styles.activeCategoryText : styles.categoryText}>
+            {category}
         </Text>
+
     </TouchableOpacity>
   )
 }
@@ -36,14 +47,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.primary,
         marginRight: vs(10),
-        paddingHorizontal: vs(15),
-        paddingVertical: vs(3),
+        paddingHorizontal: vs(10),
+        paddingVertical: vs(2),
         borderRadius: 3,
     },
     activeCategoryContainer: {
         backgroundColor: colors.primary,
         marginRight: vs(10),
-        paddingHorizontal: vs(15),
+        paddingHorizontal: vs(10),
         paddingVertical: vs(3),
         borderRadius: 3,
     }

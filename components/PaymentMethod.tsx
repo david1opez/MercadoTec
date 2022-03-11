@@ -6,9 +6,9 @@ import { vs } from 'react-native-size-matters'
 // TYPES
 type PaymentMethodProps = {
     selectedMethod: string,
-    currentMethod: string,
+    currentMethod: 'Card' | 'Oxxo',
     title: string,
-    onPress: (method: string) => void
+    onPress: (method: 'Card' | 'Oxxo') => void
 }
 
 const PaymentMethod = ({selectedMethod, currentMethod, title, onPress}: PaymentMethodProps) => {

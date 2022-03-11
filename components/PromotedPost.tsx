@@ -13,12 +13,11 @@ type ProductInfoScreenProp = StackNavigationProp<RootStackParamList, 'ProductInf
 type PromotedPostProps = {
   index: number,
   title: string,
-  seller: string,
   image: string,
   id: string
 }
 
-const PromotedPost = ({index, title, seller, image, id}: PromotedPostProps) => {
+const PromotedPost = ({index, title, image, id}: PromotedPostProps) => {
   const navigation = useNavigation<ProductInfoScreenProp>();
 
   return (
@@ -34,7 +33,6 @@ const PromotedPost = ({index, title, seller, image, id}: PromotedPostProps) => {
       
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.seller}>{seller}</Text>
       </View>
 
     </TouchableOpacity> 
@@ -71,9 +69,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(12),
   },
   title: {
-    fontFamily: "GorditaMedium",
+    fontFamily: "GorditaBold",
     color: "#fff",
-    fontSize: s(12),
+    fontSize: s(14),
   },
   seller: {
     fontFamily: "GorditaRegular",

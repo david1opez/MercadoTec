@@ -65,102 +65,20 @@ const EditProduct = () => {
   const uploadToDatabase = async () => {
     setIsInfoUploading(true);
 
-    if(!isImageChanged) {
-      updateDoc(doc(db, "Products", uid), {
-        title: title,
-        description: description,
-        image: image,
-        link: contactLink,
-        items: items,
-      }).then(() => {
-        getDoc(doc(db, "Products", "Preview"))
-        .then((docs) => {
-          let data = docs.data();
-          let oldAllData = data?.Todos;
-
-          oldAllData = oldAllData.filter((item: any) => item.id !== uid);
-
-          let newData = {
-            id: uid,
-            title: title,
-            description: description,
-            image: image,
-          }
-
-          let newAllData = [...oldAllData, newData];
-
-          console.log(newAllData);
-
-          updateDoc(doc(db, "Products", "Preview"), {
-            Todos: newAllData
-          }).then(() => {
-            alert("Tu publicación ha sido actualizada");
-            setIsInfoUploading(false);
-            navigation.navigate("Home");
-          })
-          .catch((err) => {
-            setIsInfoUploading(false);
-            alert(err)
-          })
-
-          
-        })
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        alert(error)
-      })
-
-      return;
-    }
-
     updateDoc(doc(db, "Products", uid), {
       title: title,
       description: description,
       image: image,
       link: contactLink,
       items: items,
-      views: 0
+      active: title == "ELIMINAR" ? false : true,
     }).then(() => {
-      getDoc(doc(db, "Products", "Preview"))
-      .then((docs) => {
-        let data = docs.data();
-        let oldAllData = data?.Todos;
-
-        oldAllData = oldAllData.filter((item: any) => item.id !== uid);
-
-        let newData = {
-          id: uid,
-          title: title,
-          description: description,
-          image: image,
-        }
-
-        let newAllData = [...oldAllData, newData];
-
-        updateDoc(doc(db, "Products", "Preview"), {
-          Todos: newAllData
-        }).then(() => {
-          setIsInfoUploading(false);
-          alert("Tu publicación ha sido actualizada");
-          navigation.navigate("Home");
-        })
-        .catch((err) => {
-          setIsInfoUploading(false);
-          alert(err)
-        })
-
-
-
-
-
-
-
-        
-      })
+      alert("Tu publicación ha sido actualizada");
+      setIsInfoUploading(false);
+      navigation.navigate("Home");
     })
     .catch((error) => {
-      setIsInfoUploading(false);
+      setIsLoading(false);
       alert(error)
     })
   }

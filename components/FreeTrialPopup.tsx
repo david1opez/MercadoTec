@@ -17,7 +17,7 @@ const FreeTrialPopup = ({daysLeft}: {daysLeft: number}) => {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Quedan {daysLeft} días de tú prueba gratis</Text>
-            <Text style={styles.description}>Puedes actualizar tu suscripción por solo $15.00 al mes</Text>
+            <Text style={styles.description}>Puedes actualizar tu suscripción por solo $19.00 al mes</Text>
             <TouchableOpacity style={styles.button}
                 onPress={() => navigation.navigate('Subscription')}
             >

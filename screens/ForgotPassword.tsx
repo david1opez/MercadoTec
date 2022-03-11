@@ -121,8 +121,6 @@ const ResetPassword = () => {
 
                 <View style={styles.darkBackground}>
                     <View style={styles.popupContainer}>
-                        {/* <Icon name="mail" height={vs(20)} width={vs(20)} color={"#FFF"}/> */}
-
                         <Text style={styles.popupTitle}>¡El correo de verificación fue enviado con éxito!</Text>
                         <Text style={styles.popupDescription}>Porfavor revisa tu correo para seguir con el proceso</Text>
 
@@ -137,7 +135,7 @@ const ResetPassword = () => {
                 )}
 
             <TouchableOpacity style={styles.contact}
-                onPress={() => Linking.openURL('https://wa.me/528444617126')}
+                onPress={() => Linking.openURL('mailto: mercadotec22@gmail.com')}
             >
                 <Text style={styles.contactText}>Contactar a Servicio Técnico</Text>
             </TouchableOpacity>

@@ -1,7 +1,10 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Keyboard } from 'react-native'
 import React, {useState} from 'react'
 import {vs, s} from 'react-native-size-matters'
 import {colors} from '../StyleVariables'
+import Constants from 'expo-constants';
+import {useConfirmPayment, CardField} from '@stripe/stripe-react-native';
+import {getAuth} from 'firebase/auth';
 
 // COMPONENTS
 import PaymentMethod from './PaymentMethod'
@@ -16,21 +19,72 @@ type PaymentPopupProps = {
 }
 
 const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
-    const [paymentMethod, setPaymentMethod] = useState('card');
+    const {confirmPayment} = useConfirmPayment();
+    const auth: any = getAuth();
+
+    const [paymentMethod, setPaymentMethod] = useState<'Card' | 'Oxxo'>('Card');
 
     const [isLoading, setIsLoading] = useState(false);
 
     const [name, setName] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiryDate, setExpiryDate] = useState('');
-    const [cvv, setCvv] = useState('');
     const [email, setEmail] = useState('');
+    const [cardDetail, setCardDetails]: any = useState();
 
     const validate = () => {
+        if(paymentMethod == "Oxxo") {
+            if(!name) {
+                alert("Parece que dejaste algunos campos vacíos")
+                return false
+            }
+        }
+
         return true;
     }
 
-    const makePayment = async () => {}
+    const fetchClientSecret = async () => {
+        setIsLoading(true);
+
+        const response = await fetch(Constants?.manifest?.extra?.APIURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                amount: price*100
+            })
+        })
+
+        const {clientSecret, error} = await response.json();
+
+        return {clientSecret, error};
+    }
+
+    const makePayment = async () => {
+        const {clientSecret, error} = await fetchClientSecret();
+
+        if(error) {
+            console.log(error)
+            setIsLoading(false);
+            return;
+        }
+        else {
+            const {paymentIntent, error} = await confirmPayment(clientSecret, {
+                type: "Card",
+                billingDetails: {
+                    email: auth?.currentUser?.email,
+                }
+            })
+
+            if(error) {
+                alert(error.localizedMessage)
+                setIsLoading(false);
+            }
+            else if(paymentIntent) {
+                setIsLoading(false);
+                onSuccess();
+            }  
+        }
+    }
 
     return (
         <View style={styles.darkBackground}>
@@ -41,81 +95,48 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
 
             <Text style={styles.title}>Método de pago</Text>
 
-            <PaymentMethod
+            {/* <PaymentMethod
                 selectedMethod={paymentMethod}
-                currentMethod="oxxo"
+                currentMethod="Oxxo"
                 title="Pago en efectivo con Oxxo"
                 onPress={(method) => {setPaymentMethod(method)}}
-            />
+            /> */}
 
             <PaymentMethod
                 selectedMethod={paymentMethod}
-                currentMethod="card"
+                currentMethod="Card"
                 title="Pago con tarjeta"
                 onPress={(method) => {setPaymentMethod(method)}}
             />
 
             {
-                paymentMethod === 'card' && (
-                    <View style={styles.cardInputsContainer}>
-                        <Text style={styles.placeholder}>Nombre del titular de la tarjeta</Text>
-                        <TextInput
-                            style={styles.input}
-                            autoCapitalize="words"
-                            onChangeText={(text) => {setName(text)}}
-                        />
-
-                        <Text style={styles.placeholder}>Número de tarjeta</Text>
-                        <TextInput
-                            style={styles.input}
-                            keyboardType='phone-pad'
-                            onChangeText={(text) => {setCardNumber(text)}}
-                        />
-
-                        <View style={styles.cardFlexInputs}>
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.placeholder}>Fecha de vencimiento</Text>
-                                <TextInput
-                                    style={styles.dateInput}
-                                    keyboardType='phone-pad'
-                                    onChangeText={(text) => {setExpiryDate(text)}}
-                                />
-                            </View>
-
-                            <View>
-                                <Text style={styles.placeholder}>CVV</Text>
-                                <TextInput
-                                    style={styles.cvvInput}
-                                    keyboardType='phone-pad'
-                                    onChangeText={(text) => {setCvv(text)}}
-                                />
-                            </View>
-                        </View>
-                    </View>
+                paymentMethod === 'Card' && (
+                    <CardField
+                        postalCodeEnabled={false}
+                        placeholder={{
+                            number: '4242 4242 4242 4242',
+                        }}
+                        cardStyle={styles.card}
+                        style={styles.cardContainer}
+                        onCardChange={(details) => {setCardDetails(details)}}
+                    />
                 )
             }
 
             {
-                paymentMethod === 'oxxo' && (
-                    <View style={styles.oxxoInputsContainer}>
+                paymentMethod === 'Oxxo' && (
+                    <View>
                         <Text style={styles.placeholder}>Nombre</Text>
                         <TextInput
                             style={styles.input}
                             autoCapitalize="words"
                             onChangeText={(text) => {setName(text)}}
                         />
-
-                        <Text style={styles.placeholder}>Correo</Text>
-                        <TextInput
-                            style={styles.input}
-                            autoCapitalize="none"
-                            onChangeText={(text) => {setEmail(text.replace(/\s/g, ""))}}
-                        />
                     </View>
                 )
             }
 
-            <Text style={styles.details}>{item}: ${price}</Text>
+            <Text style={[styles.details, paymentMethod == "Oxxo" && {marginTop: vs(20)}]}>{item}: ${price}</Text>
             <View style={styles.div} />
             <View style={styles.totalContainer}>
                 <Text style={styles.total}>Total: ${price}.00</Text>
@@ -125,8 +146,11 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
+                    Keyboard.dismiss();
                     if (isLoading) return;
-                    if(validate()) makePayment()
+                    if(validate()) {
+                        makePayment()
+                    }
                 }}
             >
                 {
@@ -185,57 +209,42 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         marginBottom: vs(8)
     },
-    cardInputsContainer: {},
-    cardFlexInputs: {
-        flexDirection: 'row',
+    card: {
+        backgroundColor: "#FFFFFF",
+        borderWidth: 2,
+        borderColor: colors.primary,
+        borderRadius: 3,
+        fontFamily: "GorditaRegular",
+        fontSize: vs(10),
+        alignItems: "center",
     },
-    inputContainer: {
-        marginRight: s(10),
+    cardContainer: {
+        height: vs(40),
+        marginVertical: vs(20),
     },
     input: {
         borderWidth: 1,
         borderColor: colors.primary,
         borderRadius: 3,
-        fontSize: vs(11),
+        fontSize: vs(10),
         lineHeight: vs(14),
         paddingLeft: s(10),
         paddingVertical: vs(2),
         fontFamily: "GorditaRegular",
+        color: colors.primary,
     },
     placeholder: {
         color: colors.primary,
-        fontFamily: "GorditaRegular",
+        fontFamily: "GorditaMedium",
         fontSize: vs(9),
         marginTop: vs(10),
         marginBottom: vs(5),
     },
-    dateInput: {
-        borderWidth: 1,
-        borderColor: colors.primary,
-        borderRadius: 3,
-        fontSize: vs(11),
-        lineHeight: vs(14),
-        paddingLeft: s(10),
-        fontFamily: "GorditaRegular",
-        width: s(120),
-    },
-    cvvInput: {
-        borderWidth: 1,
-        borderColor: colors.primary,
-        borderRadius: 3,
-        fontSize: vs(11),
-        lineHeight: vs(14),
-        paddingLeft: s(10),
-        fontFamily: "GorditaRegular",
-        width: vs(50),
-    },
-    oxxoInputsContainer: {},
     details: {
         textAlign: "right",
         fontFamily: "GorditaRegular",
         color: colors.primary,
         fontSize: vs(9),
-        marginTop: vs(20),
     },
     div: {
         height: 1,

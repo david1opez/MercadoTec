@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, Text, View, Keyboard, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {vs, s} from "react-native-size-matters";
-import { doc, getFirestore, getDoc } from 'firebase/firestore'
+import { doc, getFirestore, getDoc, getDocs, collection, query, where, limit, startAt, orderBy } from 'firebase/firestore'
 import * as SplashScreen from 'expo-splash-screen';
 
 import{ colors } from "../StyleVariables";
@@ -24,23 +24,26 @@ type AllPosts = {
 const Home = () => {
   const db = getFirestore();
 
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
+  const [activeCategory, setActiveCategory] = useState<string>("Todos");
 
-  const [allProducts, setAllProducts] = useState<AllPosts>();
-  const [promotedPosts, setPromotedPosts] = useState<PromotedPost[]>([]);
-  const [activeCategoryProducts, setActiveCategoryProducts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<any>([]);
+  const [promotedPosts, setPromotedPosts] = useState([]);
 
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchBarvalue, setSearchBarValue] = useState<string>("");
 
   const [isConnected, setIsConnected] = useState<boolean>(true);
 
+  const [lastDoc, setLastDoc] = useState<any>();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const categories: string[] = [
     "Todos",
     "Comida",
     "Regalos",
     "Ropa",
-    "Higiene",
+    "Cuidado Personal",
     "Otros"
   ];
 
@@ -51,32 +54,95 @@ const Home = () => {
     setPromotedPosts(data.Posts);
   }
 
-  const GetProducts = async () => {
-    let docSnap = await getDoc(doc(db, "Products", "Preview"));
-    if(!docSnap.exists()) return;
-    setAllProducts(docSnap.data());
+  const GetFirstProducts = async (category?: string) => {
+    const productsRef = collection(db, "Products");
+
+    setPosts([]);
+
+    let firstquery;
+
+    if(category) {
+      firstquery = query(productsRef,
+        where("category", "==", category),
+        where("active", "==", true),
+        limit(5),
+      );
+    } else {
+      firstquery = query(productsRef,
+        where("active", "==", true),
+        orderBy("views", "desc"),
+        orderBy("creationDate", "asc"),
+        limit(5)
+      );
+    }
+
+    const firstDocs = await getDocs(firstquery);
+
+    setLastDoc(firstDocs.docs[firstDocs.size-1]);
+
+    firstDocs.forEach((doc: any) => {
+      setPosts((prevState: any) => {
+        return [...prevState, doc.data()]
+      });
+    });
+    
+    // setPosts(posts.slice(0, -1));
+  }
+
+  const GetNextProducts = async (category?: string) => {
+    const productsRef = collection(db, "Products");
+
+    let q1;
+
+    if(category) {
+      q1 = query(productsRef,
+        where("category", "==", category),
+        where("active", "==", true),
+        limit(5),
+        startAt(lastDoc)
+      );
+    } else {
+      q1 = query(productsRef,
+        where("active", "==", true),
+        orderBy("views", "desc"),
+        orderBy("creationDate", "asc"),
+        limit(5),
+        startAt(lastDoc)
+      );
+    }
+
+    const documents = await getDocs(q1);
+
+    setLastDoc(documents.docs[documents.size-1]);
+
+    documents.forEach((doc: any) => {
+      setPosts((prevState: any) => {
+        if(doc.data().id == lastDoc.data().id) {return prevState};
+        return [...prevState, doc.data()]
+      });
+    });
   }
 
   useEffect(() => {
-    if(!activeCategoryProducts || !promotedPosts) {
+    if(!promotedPosts) {
       SplashScreen.preventAutoHideAsync();
     }
 
-    GetPromotedPosts();
-    GetProducts();
+    setIsLoading(true);
+    GetPromotedPosts().then(() => {
+      GetFirstProducts().then(() => {
+        setIsLoading(false);
+      })
+    })
   }, [])
 
   useEffect(() => {
-    if(!allProducts) return;
-    let category: string = categories[activeCategoryIndex];
-    setActiveCategoryProducts(allProducts[category]);
-  }, [allProducts]);
-
-  useEffect(() => {
-    if(!activeCategoryProducts) return;
-    let category: string = categories[activeCategoryIndex];
-    if(allProducts) setActiveCategoryProducts(allProducts[category]);
-  }, [activeCategoryIndex]);
+    if(activeCategory == "Todos") {
+      GetFirstProducts();
+    } else {
+      GetFirstProducts(activeCategory);
+    }
+  }, [activeCategory])
 
 
   if(!isConnected) {
@@ -85,7 +151,7 @@ const Home = () => {
     )
   }
 
-  if(activeCategoryProducts && promotedPosts) {
+  if(promotedPosts) {
     SplashScreen.hideAsync();
   }
 
@@ -104,8 +170,8 @@ const Home = () => {
         onPress={() => {
           setIsSearching(false);
           Keyboard.dismiss();
-          GetProducts();
           GetPromotedPosts();
+          GetFirstProducts();
         }}
       />
 
@@ -115,7 +181,7 @@ const Home = () => {
             <Text style={styles.searchResultsTitle}>Resultados de la búsqueda</Text>
             <ScrollView>
               {
-                allProducts?.Todos.filter((product: Post): boolean => {
+                posts?.Todos.filter((product: Post): boolean => {
 
                   let titleResults = product?.title.toLowerCase().replace(/\s/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchBarvalue.replace(/\s/g, ''))
                   let descriptionResults = product?.description.toLowerCase().replace(/\s/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchBarvalue.replace(/\s/g, ''));
@@ -147,7 +213,6 @@ const Home = () => {
                         key={index}
                         index={index}
                         title={post.title}
-                        seller={post.seller}
                         image={post.image}
                         id={post.id}
                       />
@@ -166,10 +231,11 @@ const Home = () => {
                   return (
                     <Category
                       key={index}
-                      name={category}
-                      index={index}
-                      activeCategoryIndex={activeCategoryIndex}
-                      returnIndex={(index: number) => {setActiveCategoryIndex(index)}}
+                      category={category}
+                      activeCategory={activeCategory}
+                      onChangeCategory={(category) => {
+                        setActiveCategory(category);
+                      }}
                     />
                   )
                 })
@@ -179,18 +245,32 @@ const Home = () => {
             <View style={styles.postsContainer}>
               <ScrollView>
                 {
-                  activeCategoryProducts.length > 0 && (
-                    activeCategoryProducts.reverse().map((post: any, index: number) => {
-                      return (
-                        <Post
-                          key={index}
-                          title={post.title}
-                          description={post.description}
-                          image={post.image}
-                          id={post.id}
-                        />
-                      )
-                    })
+                  posts.map((post: any, index: number) => {
+                    return (
+                      <Post
+                        key={index}
+                        title={post.title}
+                        description={post.description}
+                        image={post.image}
+                        id={post.id}
+                      />
+                    )
+                  })
+                }
+
+                {
+                  !isLoading && (
+                    <TouchableOpacity style={styles.loadMoreButton}
+                      onPress={() => {
+                        if(activeCategory == "Todos") {
+                          GetNextProducts();
+                        } else {
+                          GetNextProducts(activeCategory);
+                        }
+                      }}
+                    >
+                      <Text style={styles.loadMoreButtonText}>Cargar más</Text>
+                    </TouchableOpacity>
                   )
                 }
               </ScrollView>
@@ -240,5 +320,15 @@ const styles = StyleSheet.create({
   loadingPromotedPosts: {
     height: vs(200),
     width: s(150),
+  },
+  loadMoreButton: {
+    marginBottom: vs(20),
+  },
+  loadMoreButtonText: {
+    fontFamily: "GorditaMedium",
+    fontSize: s(10),
+    textAlign: "center",
+    color: colors.primary,
+    textDecorationLine: 'underline',
   }
 })

@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'Mercado Tec',
+    name: 'MercadoTec',
     scheme: 'mercado-tec',
     slug: 'mercado-tec',
     version: '0.0.1',
@@ -39,7 +39,7 @@ export default {
       APPID: process.env.APPID,
       MEASUREMENTID: process.env.MEASUREMENTID,
       PUBLISHABLEKEY: process.env.PUBLISHABLEKEY,
-      SECRETKEY: process.env.SECRETKEY
+      APIURL: process.env.APIURL,
     },
     plugins: [
       [

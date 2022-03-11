@@ -51,6 +51,10 @@ const PromotePostPopup = ({onClose, index, minOffer, onBuy}: PromotePostPopupPro
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
+            if(price < minOffer) {
+              alert("La oferta debe ser igual o mayor a $"+minOffer)
+              return;
+            }
             onBuy(price)
             onClose()
           }}

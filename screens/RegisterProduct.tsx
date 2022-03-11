@@ -65,6 +65,8 @@ const RegisterProduct = ({route}: any) => {
 
       const storageRef = ref(storage, `${uid}/mainProductImage.jpg`);
 
+      const creationDate = new Date().getTime() / 86400000;
+
       uploadBytes(storageRef, blob)
       .then(() => {
         getDownloadURL(storageRef)
@@ -75,40 +77,20 @@ const RegisterProduct = ({route}: any) => {
             image: url,
             items: [],
             link: link,
-            views: 0
+            views: 0,
+            active: title == "ELIMINAR" ? false : true,
+            category: category,
+            creationDate: creationDate,
+            id: uid
           })
           .then(() => {
-            updateDoc(doc(db, "Products", "Preview"), {
-              [category]: arrayUnion({
-                title: title,
-                description: description,
-                image: url,
-                id: uid
-              }),
-              Todos: arrayUnion({
-                title: title,
-                description: description,
-                image: url,
-                id: uid
-              })
-            })
-            .then(() => {
               setIsLoading(false);
               navigation.navigate('RegisterItems');
-            })
-            .catch(error => {
-              alert(error.message);
-              setIsLoading(false);
-            })
           })
           .catch((error) => {
             alert(error.message);
             setIsLoading(false);
           });
-
-
-
-
         })
         .catch((error) => {
           alert(error.message)
@@ -180,10 +162,10 @@ const RegisterProduct = ({route}: any) => {
                 <Text style={styles.categoryOptionText}>Ropa</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.categoryOption} onPress={() => {
-                setCategory("Higiene");
+                setCategory("Cuidado Personal");
                 setShowOptions(false)
               }}>
-                <Text style={styles.categoryOptionText}>Higiene</Text>
+                <Text style={styles.categoryOptionText}>Cuidado Personal</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.categoryOption} onPress={() => {
                 setCategory("Otros");

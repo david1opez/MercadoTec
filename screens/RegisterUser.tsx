@@ -34,7 +34,6 @@ const RegisterUser = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [termsPopup, setTermsPopup] = useState(false);
 
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   const [password, setPassword] = useState('');
@@ -78,15 +77,16 @@ const RegisterUser = () => {
         getExpoNotificationToken().then((token) => {
           if(token) {
             setDoc(doc(db, "Users", uid), {
-              name: name.trim(),
               notificationToken: token,
               freeTrial: true,
-              cutOffDate: currentDay + 15,
+              cutOffDate: Math.trunc(currentDay + 16),
             })
           }
           else {
             setDoc(doc(db, "Users", uid), {
-              name: name.trim(),
+              notificationToken: token,
+              freeTrial: true,
+              cutOffDate: Math.trunc(currentDay + 16),
             })
           }
         })
@@ -128,11 +128,6 @@ const RegisterUser = () => {
 
       <Text style={styles.title}>ÚNETE A{"\n"}MERCADOTEC</Text>
       <Text style={styles.description}>Ya no utilices Facebook para vender en el campus. Nostros te ayudamos a tener un público más enfocado para que puedas vender más :)</Text>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Nombre:</Text>
-        <TextInput style={styles.input} onChangeText={(value) => {setName(value)}}/>
-      </View>
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Correo:</Text>
@@ -191,7 +186,7 @@ const RegisterUser = () => {
       <TouchableOpacity style={styles.mainButton}
         onPress={() => {
           if(isLoading) return;
-          Validate('user', {name, email, password, contact, contactOption}).then((id) => {
+          Validate('user', {email, password, contact, contactOption}).then((id) => {
             Keyboard.dismiss();
             if(id == 0) registerUser();
             else setErrorPopup(id);
