@@ -119,7 +119,7 @@ const AddProductPopup = ({index, onAddProduct, onClose}: {index: number, onAddPr
                         const blob = await uri.blob();
                     
                         const storage = getStorage();
-                        const storageRef = ref(storage, `${uid}/item${index}Image.jpg`);
+                        const storageRef = ref(storage, `${uid}_I${index}.jpg`);
                     
                         uploadBytes(storageRef, blob)
                         .then(() => {

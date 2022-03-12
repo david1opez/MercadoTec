@@ -70,13 +70,15 @@ const Home = () => {
       firstquery = query(productsRef,
         where("category", "==", category),
         where("active", "==", true),
+        orderBy("views", "desc"),
+        orderBy("creationDate", "desc"),
         limit(5),
       );
     } else {
       firstquery = query(productsRef,
         where("active", "==", true),
         orderBy("views", "desc"),
-        orderBy("creationDate", "asc"),
+        orderBy("creationDate", "desc"),
         limit(5)
       );
     }
@@ -90,8 +92,6 @@ const Home = () => {
         return [...prevState, doc.data()]
       });
     });
-    
-    // setPosts(posts.slice(0, -1));
   }
 
   const GetNextProducts = async (category?: string) => {
@@ -103,6 +103,8 @@ const Home = () => {
       q1 = query(productsRef,
         where("category", "==", category),
         where("active", "==", true),
+        orderBy("views", "desc"),
+        orderBy("creationDate", "desc"),
         limit(5),
         startAt(lastDoc)
       );
@@ -110,7 +112,7 @@ const Home = () => {
       q1 = query(productsRef,
         where("active", "==", true),
         orderBy("views", "desc"),
-        orderBy("creationDate", "asc"),
+        orderBy("creationDate", "desc"),
         limit(5),
         startAt(lastDoc)
       );

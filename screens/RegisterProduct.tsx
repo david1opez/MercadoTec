@@ -63,7 +63,7 @@ const RegisterProduct = ({route}: any) => {
       const uri = await fetch(image)
       const blob = await uri.blob();
 
-      const storageRef = ref(storage, `${uid}/mainProductImage.jpg`);
+      const storageRef = ref(storage, `${uid}_MPI.jpg`);
 
       const creationDate = new Date().getTime() / 86400000;
 

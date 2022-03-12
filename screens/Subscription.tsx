@@ -109,13 +109,21 @@ const Subscription = () => {
         showPopup && (
           <PaymentPopup
             onClose={() => {setShowPopup(false)}}
-            onSuccess={() => {
-              updateSubscription().then(() => {
-                setSuccessPopup(true);
-              })
+            onSuccess={(oxxo) => {
+              if(oxxo) {
+                setShowPopup(false);
+                alert("Tu suscripción se actualizará una vez termines tu compra en OXXO :)");
+                navigation.goBack();
+              }
+              else {
+                updateSubscription().then(() => {
+                  setSuccessPopup(true);
+                })
+              }
             }}
             price={selectedPlan == 1 ? 27 : 57}
             item={selectedPlan == 1 ? 'Suscripción por 1 mes' : 'Suscripción por 3 meses'}
+            oxxoPayment={true}
           />
         )
       }

@@ -48,7 +48,7 @@ const RegisterItems = () => {
     setIsLoading(true);
     convertUriToBlob(image).then((blob) => {
       const storage = getStorage();
-      const storageRef = ref(storage, `${uid}/item${items.length}Image.jpg`);
+      const storageRef = ref(storage, `${uid}_I${items.length}.jpg`);
 
       uploadBytes(storageRef, blob)
       .then(() => {

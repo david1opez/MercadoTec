@@ -195,7 +195,7 @@ const EditProduct = () => {
               SelectImage().then((uri) => {
                 convertUriToBlob(uri).then((blob) => {
                   const storage = getStorage();
-                  const storageRef = ref(storage, `${uid}/mainProductImage.jpg`);
+                  const storageRef = ref(storage, `${uid}_MPI.jpg`);
 
                   uploadBytes(storageRef, blob)
                   .then(() => {

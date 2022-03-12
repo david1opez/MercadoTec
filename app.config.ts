@@ -5,7 +5,7 @@ export default {
     name: 'MercadoTec',
     scheme: 'mercado-tec',
     slug: 'mercado-tec',
-    version: '0.0.1',
+    version: '1.1.1',
     orientation: 'portrait',
     splash: {
       image: './assets/splash.png',

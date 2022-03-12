@@ -140,9 +140,14 @@ const PromotePost = () => {
         paymentPopup && (
           <PaymentPopup
             onClose={() => setPaymentPopup(false)}
+            oxxoPayment={false}
             price={price}
             item={"Publicación promocionada"}
-            onSuccess={() => {
+            onSuccess={(oxxo) => {
+              if(oxxo) {
+                setPaymentPopup(false);
+                alert("Una vez realizado el pago, podrás ver tu publicación en las publicaciones promocionadas");
+              }
               setNewPromotedPost(popupInfo.index, price)
               .then(() => {
                 setPaymentPopup(false);

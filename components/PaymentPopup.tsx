@@ -14,11 +14,12 @@ import Icon from '../assets/icons';
 type PaymentPopupProps = {
     onClose: () => void,
     price: number,
-    onSuccess: () => void,
-    item: string
+    onSuccess: (oxxo: boolean) => void,
+    item: string,
+    oxxoPayment: boolean
 }
 
-const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
+const PaymentPopup = ({onClose, price, onSuccess, item, oxxoPayment}: PaymentPopupProps) => {
     const {confirmPayment} = useConfirmPayment();
     const auth: any = getAuth();
 
@@ -27,7 +28,6 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [cardDetail, setCardDetails]: any = useState();
 
     const validate = () => {
@@ -44,7 +44,15 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
     const fetchClientSecret = async () => {
         setIsLoading(true);
 
-        const response = await fetch(Constants?.manifest?.extra?.APIURL, {
+        let APIURL;
+
+        if(paymentMethod == 'Oxxo') {
+            APIURL = `${Constants?.manifest?.extra?.APIURL}/create-oxxo-payment-intent`
+        } else {
+            APIURL = `${Constants?.manifest?.extra?.APIURL}/create-card-payment-intent`
+        }
+
+        const response = await fetch(APIURL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,21 +76,42 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
             return;
         }
         else {
-            const {paymentIntent, error} = await confirmPayment(clientSecret, {
-                type: "Card",
-                billingDetails: {
-                    email: auth?.currentUser?.email,
-                }
-            })
+            if(paymentMethod == 'Oxxo') {
+                const {paymentIntent, error} = await confirmPayment(clientSecret, {
+                    type: 'Oxxo',
+                    billingDetails: {
+                        email: auth.currentUser?.email,
+                        name: name
+                    }
+                })
 
-            if(error) {
-                alert(error.localizedMessage)
-                setIsLoading(false);
+                if(error) {
+                    alert(error.localizedMessage)
+                    setIsLoading(false);
+                }
+                else if(paymentIntent) {
+                    console.log(paymentIntent);
+                    setIsLoading(false);
+                    onSuccess(true);
+                }  
+            } else {
+                const {paymentIntent, error} = await confirmPayment(clientSecret, {
+                    type: 'Card',
+                    billingDetails: {
+                        email: auth.currentUser?.email,
+                    }
+                })
+
+                if(error) {
+                    alert(error.localizedMessage)
+                    setIsLoading(false);
+                }
+                else if(paymentIntent) {
+                    console.log(paymentIntent);
+                    setIsLoading(false);
+                    onSuccess(false);
+                }  
             }
-            else if(paymentIntent) {
-                setIsLoading(false);
-                onSuccess();
-            }  
         }
     }
 
@@ -95,12 +124,16 @@ const PaymentPopup = ({onClose, price, onSuccess, item}: PaymentPopupProps) => {
 
             <Text style={styles.title}>Método de pago</Text>
 
-            {/* <PaymentMethod
-                selectedMethod={paymentMethod}
-                currentMethod="Oxxo"
-                title="Pago en efectivo con Oxxo"
-                onPress={(method) => {setPaymentMethod(method)}}
-            /> */}
+            {
+                oxxoPayment && (
+                    <PaymentMethod
+                        selectedMethod={paymentMethod}
+                        currentMethod="Oxxo"
+                        title="Pago en efectivo con Oxxo"
+                        onPress={(method) => {setPaymentMethod(method)}}
+                    />
+                )
+            }
 
             <PaymentMethod
                 selectedMethod={paymentMethod}
