@@ -14,7 +14,7 @@ type ProductInfoScreenProp = StackNavigationProp<RootStackParamList, 'ProductInf
 type PostProps = {
   title: string,
   description: string,
-  image: string,
+  image?: string,
   id: string
 }
 
@@ -48,13 +48,19 @@ const Post = ({title, description, image, id}: PostProps) => {
 
       <View style={styles.leftContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description?.substring(0, 130) + "..."}</Text>
+        <Text style={image ? styles.description: styles.longDescription}>
+          {image ? description?.substring(0, 130) + "..." : description}
+        </Text>
       </View>
 
-      <View>
-        <Image style={styles.image} source={{uri: image}} />
-        <View style={styles.darkenImage} />
-      </View>
+      {
+        image && (
+          <View>
+            <Image style={styles.image} source={{uri: image}} />
+            <View style={styles.darkenImage} />
+          </View>
+        )
+      }
     </TouchableOpacity>
   )
 }
@@ -86,6 +92,11 @@ const styles = StyleSheet.create({
     fontSize: vs(7),
     fontFamily: "GorditaRegular",
     lineHeight: vs(10),
+  },
+  longDescription: {
+    fontSize: vs(7),
+    fontFamily: "GorditaRegular",
+    lineHeight: vs(10.6),
   },
   image: {
     width: vs(75),

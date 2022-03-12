@@ -1,8 +1,13 @@
-import { ScrollView, StyleSheet, Text, View, Keyboard, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Keyboard, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {vs, s} from "react-native-size-matters";
 import { doc, getFirestore, getDoc, getDocs, collection, query, where, limit, startAt, orderBy } from 'firebase/firestore'
 import * as SplashScreen from 'expo-splash-screen';
+import algoliasearch from 'algoliasearch';
+import Constants from 'expo-constants';
+
+const client = algoliasearch(Constants?.manifest?.extra?.ALGOLIAAPPID, Constants?.manifest?.extra?.ALGOLIAAPIKEY);
+const algoliaIndex = client.initIndex('mercadotec_posts');
 
 import{ colors } from "../StyleVariables";
 
@@ -28,9 +33,9 @@ const Home = () => {
 
   const [posts, setPosts] = useState<any>([]);
   const [promotedPosts, setPromotedPosts] = useState([]);
+  const [searchResults, setSearchResults] = useState<any>([]);
 
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [searchBarvalue, setSearchBarValue] = useState<string>("");
 
   const [isConnected, setIsConnected] = useState<boolean>(true);
 
@@ -123,6 +128,13 @@ const Home = () => {
     });
   }
 
+  const Search = async (text: string) => {
+    const results = await algoliaIndex.search(text, {
+      hitsPerPage: 5,
+    });
+    setSearchResults(results.hits);
+  }
+
   useEffect(() => {
     if(!promotedPosts) {
       SplashScreen.preventAutoHideAsync();
@@ -165,7 +177,7 @@ const Home = () => {
             return;
           };
           setIsSearching(true);
-          setSearchBarValue(text);
+          Search(text);
         }}
         onPress={() => {
           setIsSearching(false);
@@ -181,25 +193,19 @@ const Home = () => {
             <Text style={styles.searchResultsTitle}>Resultados de la búsqueda</Text>
             <ScrollView>
               {
-                posts?.Todos.filter((product: Post): boolean => {
-
-                  let titleResults = product?.title.toLowerCase().replace(/\s/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchBarvalue.replace(/\s/g, ''))
-                  let descriptionResults = product?.description.toLowerCase().replace(/\s/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchBarvalue.replace(/\s/g, ''));
-
-                  return titleResults || descriptionResults;
-
-                }).map((product: Post, index: number) => {
-                  return (
+                searchResults.length > 0 && (
+                searchResults.map((post: any, index: number) => {
+                  return(
                     <Post
                       key={index}
-                      title={product.title}
-                      description={product.description}
-                      image={product.image}
-                      id={product.id}
+                      title={post.title}
+                      description={post.description}
+                      image={post.image}
+                      id={post.objectID}
                     />
-                  )
+                  ) 
                 })
-              }
+                )}
             </ScrollView>
           </View>
         ) : (
@@ -309,6 +315,7 @@ const styles = StyleSheet.create({
   },
   searchResultsContainer: {
     marginHorizontal: s(16),
+    height: vs(600),
   },
   searchResultsTitle: {
     fontFamily: "GorditaMedium",

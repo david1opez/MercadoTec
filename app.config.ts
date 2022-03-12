@@ -40,6 +40,8 @@ export default {
       MEASUREMENTID: process.env.MEASUREMENTID,
       PUBLISHABLEKEY: process.env.PUBLISHABLEKEY,
       APIURL: process.env.APIURL,
+      ALGOLIAAPPID: process.env.ALGOLIAAPPID,
+      ALGOLIAAPIKEY: process.env.ALGOLIAAPIKEY,
     },
     plugins: [
       [
