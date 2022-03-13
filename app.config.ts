@@ -50,7 +50,8 @@ export default {
           "merchantIdentifier": "merchant.com.david1opez.mercadotec",
           "enableGooglePay": true,
         }
-      ]
+      ],
+      "react-native-compressor"
     ]
   }
 };
