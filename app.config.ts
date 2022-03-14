@@ -3,7 +3,7 @@ import 'dotenv/config';
 export default {
   expo: {
     name: 'MercadoTec',
-    scheme: 'mercado-tec',
+    scheme: 'mercadotec',
     slug: 'mercado-tec',
     version: '1.1.1',
     orientation: 'portrait',

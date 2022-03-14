@@ -71,9 +71,9 @@ export default function App() {
   })
 
   let [fontsLoaded] = useFonts({
-    GorditaRegular: require('./assets/fonts/GorditaMedium.otf'),
-    GorditaMedium: require('./assets/fonts/GorditaBold.otf'),
-    GorditaBold: require('./assets/fonts/GorditaBlack.otf'),
+    GorditaRegular: require('./assets/fonts/GorditaRegular.otf'),
+    GorditaMedium: require('./assets/fonts/GorditaMedium.otf'),
+    GorditaBold: require('./assets/fonts/GorditaBold.otf'),
   });
 
   if (!fontsLoaded || !firebaseLoaded) {

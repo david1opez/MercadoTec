@@ -122,7 +122,7 @@ const RegisterItems = () => {
       </TouchableOpacity>
 
       <Text style={styles.title}>PRODUCTOS</Text>
-      <Text style={styles.description}>Si ofreces distintos productos en lo que vendes puedes incluirlos uno por uno para mostrar sus precios</Text>
+      <Text style={styles.description}>Si ofreces distintos productos en lo que vendes puedes incluirlos uno por uno para mostrar sus precios (max 7)</Text>
 
       <View style={styles.inputsContainer}>
         <View>
@@ -187,7 +187,11 @@ const RegisterItems = () => {
                 setIsLoading(false);
                 return;
               };
-              addItem();
+              if(items.length < 7) {
+                addItem();
+              } else {
+                alert("De momento solo puedes agregar hasta 7 productos")
+              }
             }}
           >
             {

@@ -4,7 +4,7 @@ export default async function SelectImage(): Promise<string> {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 0.8,
+        quality: 0.6,
     });
     
     if (!result.cancelled) {

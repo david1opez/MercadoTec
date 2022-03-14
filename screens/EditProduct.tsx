@@ -262,7 +262,11 @@ const EditProduct = () => {
           </View>
 
           <TouchableOpacity style={styles.addItemButton}
-            onPress={() => {setIsOpen(true)}}
+            onPress={() => {
+              if(items.length < 7) {
+                setIsOpen(true)
+              }
+            }}
           >
             <Text style={styles.addItemButtonText}>Agregar producto</Text>
           </TouchableOpacity>

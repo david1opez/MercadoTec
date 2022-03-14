@@ -42,7 +42,8 @@
     "react-native-size-matters": "^0.4.0",
     "react-native-svg": "12.1.1",
     "react-native-web": "0.17.1",
-    "@unimodules/core": "~7.2.0"
+    "@unimodules/core": "~7.2.0",
+    "expo-updates": "~0.11.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
