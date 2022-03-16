@@ -6,7 +6,6 @@ import { useFonts } from 'expo-font';
 import { LogBox } from 'react-native';
 import {initializeApp} from 'firebase/app';
 import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
 import { StripeProvider } from '@stripe/stripe-react-native';
 
 /* === SCREENS === */
@@ -58,17 +57,6 @@ export default function App() {
     if(!firebaseApp) return;
     setFirebaseLoaded(true);
   }, [firebaseApp]);
-
-  const notificationsPermission = async () => {
-    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
-      await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    }
-  };
-
-  useEffect(() => {
-    notificationsPermission();
-  })
 
   let [fontsLoaded] = useFonts({
     GorditaRegular: require('./assets/fonts/GorditaRegular.otf'),

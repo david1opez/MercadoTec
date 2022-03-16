@@ -5,7 +5,7 @@ export default {
     name: 'MercadoTec',
     scheme: 'mercadotec',
     slug: 'mercado-tec',
-    version: '1.1.1',
+    version: '1.1.2',
     orientation: 'portrait',
     splash: {
       image: './assets/splash.png',
@@ -25,6 +25,9 @@ export default {
         backgroundColor: '#C92744'
       },
       package: "com.david1opez.mercadotec",
+      permissions: [
+        "CAMERA",
+      ]
     },
     notification: {
       icon: './assets/icon.png',

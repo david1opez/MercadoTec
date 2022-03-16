@@ -17,6 +17,7 @@
     "@react-navigation/stack": "^6.1.1",
     "@stripe/stripe-react-native": "0.2.3",
     "@types/expo": "^33.0.1",
+    "@unimodules/core": "~7.2.0",
     "algoliasearch": "^4.12.2",
     "dotenv": "^16.0.0",
     "expo": "~44.0.0",
@@ -27,9 +28,9 @@
     "expo-linking": "~3.0.0",
     "expo-network": "~4.1.0",
     "expo-notifications": "~0.14.0",
-    "expo-permissions": "~13.1.0",
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
+    "expo-updates": "~0.11.6",
     "firebase": "^9.6.7",
     "moti": "^0.17.1",
     "react": "17.0.1",
@@ -41,9 +42,7 @@
     "react-native-screens": "~3.10.1",
     "react-native-size-matters": "^0.4.0",
     "react-native-svg": "12.1.1",
-    "react-native-web": "0.17.1",
-    "@unimodules/core": "~7.2.0",
-    "expo-updates": "~0.11.6"
+    "react-native-web": "0.17.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

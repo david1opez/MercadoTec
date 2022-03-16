@@ -20,7 +20,7 @@ import NoConnectionComponent from '../components/NoConnectionComponent';
 
 // TYPES
 type Post = {title: string, description: string, image: string, id: string}
-type PromotedPost = {title: string, seller: string, image: string, id: string}
+type PromotedPost = {title: string, seller: string, image: string, id: string, description: string}
 type AllPosts = {
   [key: string]: Post[]
 }
@@ -70,15 +70,15 @@ const Home = () => {
       firstquery = query(productsRef,
         where("category", "==", category),
         where("active", "==", true),
-        orderBy("views", "desc"),
-        orderBy("creationDate", "desc"),
+        // orderBy("views", "desc"),
+        // orderBy("creationDate", "desc"),
         limit(5),
       );
     } else {
       firstquery = query(productsRef,
         where("active", "==", true),
-        orderBy("views", "desc"),
-        orderBy("creationDate", "desc"),
+        // orderBy("views", "desc"),
+        // orderBy("creationDate", "desc"),
         limit(5)
       );
     }
@@ -103,16 +103,16 @@ const Home = () => {
       q1 = query(productsRef,
         where("category", "==", category),
         where("active", "==", true),
-        orderBy("views", "desc"),
-        orderBy("creationDate", "desc"),
+        // orderBy("views", "desc"),
+        // orderBy("creationDate", "desc"),
         limit(5),
         startAt(lastDoc)
       );
     } else {
       q1 = query(productsRef,
         where("active", "==", true),
-        orderBy("views", "desc"),
-        orderBy("creationDate", "desc"),
+        // orderBy("views", "desc"),
+        // orderBy("creationDate", "desc"),
         limit(5),
         startAt(lastDoc)
       );
@@ -197,12 +197,19 @@ const Home = () => {
               {
                 searchResults.length > 0 && (
                 searchResults.map((post: any, index: number) => {
+                  if(
+                    post.title.toLowerCase().includes("vape") ||
+                    post.title.toLowerCase().includes("masking") ||
+                    post.description.toLowerCase().includes("vape") ||
+                    post.description.toLowerCase().includes("masking") ||
+                    post.description.toLowerCase().includes("vaping") ||
+                    post.title.toLowerCase().includes("vaping")
+                  )
                   return(
                     <Post
                       key={index}
                       title={post.title}
                       description={post.description}
-                      image={post.image}
                       id={post.objectID}
                     />
                   ) 
@@ -223,6 +230,7 @@ const Home = () => {
                         title={post.title}
                         image={post.image}
                         id={post.id}
+                        description={post.description}
                       />
                     )
                   })

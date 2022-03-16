@@ -6,7 +6,6 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Validate from '../hooks/Validate';
-import * as Permissions from 'expo-permissions';
 import * as Notification from 'expo-notifications';
 
 import { colors, templates } from '../StyleVariables'
@@ -43,14 +42,6 @@ const RegisterUser = () => {
   const [contact, setContact] = useState('');
 
   const getExpoNotificationToken = async () => {
-    const {status} = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    if(status !== 'granted') {
-      await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    }
-    if(status != 'granted') {
-      return;
-    }
-
     const token = (await Notification.getExpoPushTokenAsync()).data;
     return token;
   }

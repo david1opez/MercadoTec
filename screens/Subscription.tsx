@@ -46,7 +46,7 @@ const Subscription = () => {
 
       <Text style={styles.title}>TU SUSCRIPCIÓN A MERCADOTEC</Text>
       <Text style={styles.description}>
-        Puedes invertir en tu negocio por menos de la mitad de lo que gastas en ,
+        Puedes invertir en tu negocio por menos de la mitad de lo que gastas por una torta en la pasadita ,
         todos los usuarios que están en MercadoTec están aquí para comprar y si
         tu publicación está aquí, nosotros te ayudamos a vender más.
       </Text>

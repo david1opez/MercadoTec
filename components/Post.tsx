@@ -25,25 +25,28 @@ const Post = ({title, description, image, id}: PostProps) => {
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
 
+  const increaseViewCount = async () => {
+    if(uid == id) {
+      navigation.navigate("ProductInfo", {id: id})
+      return;
+    };
+
+    updateDoc(doc(db, "Products", id), {
+      views: increment(1)
+    })
+    .then( () => {
+      navigation.navigate("ProductInfo", {id: id})
+    })
+    .catch((error) => {
+      alert(error);
+    })
+  }
+  
+
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => {
-        if(uid == id) {
-          navigation.navigate("ProductInfo", {id: id})
-          return;
-        };
-
-        updateDoc(doc(db, "Products", id), {
-          views: increment(1)
-        })
-        .then( () => {
-          navigation.navigate("ProductInfo", {id: id})
-        })
-        .catch((error) => {
-          alert(error);
-        })
-      }}
+      onPress={() => {increaseViewCount()}}
     >
 
       <View style={styles.leftContainer}>

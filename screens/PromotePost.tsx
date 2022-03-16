@@ -59,6 +59,7 @@ const PromotePost = () => {
       image: newData.image,
       price: price+5,
       title: newData.title,
+      description: newData.description,
     }
 
     posts[index] = newPromotedPost;
