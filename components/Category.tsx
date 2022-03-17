@@ -35,12 +35,17 @@ const styles = StyleSheet.create({
     categoryText: {
         color: colors.primary,
         fontSize: vs(8),
-        fontFamily: "GorditaMedium"
+        lineHeight: vs(10),
+        fontFamily: "GorditaMedium",
+        paddingTop: vs(3),
+        paddingBottom: vs(1.5)
     },
     activeCategoryText: {
         color: "#FFF",
         fontSize: vs(8),
-        fontFamily: "GorditaMedium"
+        lineHeight: vs(10),
+        fontFamily: "GorditaMedium",
+        paddingTop: vs(4),
     },
     categoryContainer: {
         backgroundColor: "#FFF",
@@ -48,14 +53,12 @@ const styles = StyleSheet.create({
         borderColor: colors.primary,
         marginRight: vs(10),
         paddingHorizontal: vs(10),
-        paddingVertical: vs(2),
         borderRadius: 3,
     },
     activeCategoryContainer: {
         backgroundColor: colors.primary,
         marginRight: vs(10),
         paddingHorizontal: vs(10),
-        paddingVertical: vs(3),
         borderRadius: 3,
     }
 })
