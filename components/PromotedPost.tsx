@@ -73,7 +73,7 @@ export default PromotedPost
 
 const styles = StyleSheet.create({
   container: {
-    marginRight: s(20),
+    marginRight: s(15),
   },
   image: {
     width: s(270),
