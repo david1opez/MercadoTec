@@ -76,10 +76,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginBottom: s(15),
+    marginBottom: s(10),
     borderBottomWidth: 1,
     borderColor: colors.primary,
-    paddingBottom: s(15),
+    paddingBottom: vs(7),
   },
   leftContainer: {
     flex: 1,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontSize: vs(10),
     fontFamily: "GorditaMedium",
     marginBottom: s(5),
-    textDecorationLine: 'underline',
+    color: "#000",
   },
   description: {
     fontSize: vs(7),
