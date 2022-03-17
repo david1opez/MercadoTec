@@ -20,12 +20,12 @@ export const templates = StyleSheet.create({
     },
     upperLogoText: {
         fontFamily: "GorditaBold",
-        fontSize: vs(11),
-        marginBottom: vs(-5),
+        fontSize: vs(10),
+        marginBottom: vs(-4),
     },
     bottomLogoText: {
         fontFamily: "GorditaBold",
-        fontSize: vs(11),
+        fontSize: vs(10),
     },
     returnIcon: {
         width: vs(26),

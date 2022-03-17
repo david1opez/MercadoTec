@@ -39,7 +39,7 @@ const Navbar = ({onChangeSearchValue, onPress}: NavbarProps) => {
         onPress={() => onPress()}
       >
 
-        <Icon name="logo" width={vs(24)} height={vs(24)} color={colors.primary}/>
+        <Icon name="logo" width={vs(20)} height={vs(20)} color={colors.primary}/>
         
         <View style={templates.logoTextContainer}>
           <Text style={templates.upperLogoText}>Mercado</Text>

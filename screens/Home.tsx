@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   },
   postsContainer: {
     marginHorizontal: s(16),
-    height: vs(360),
+    height: vs(370),
   },
   searchResultsContainer: {
     marginHorizontal: s(16),
