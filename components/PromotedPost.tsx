@@ -53,12 +53,13 @@ const PromotedPost = ({index, title, image, id, description}: PromotedPostProps)
       <ImageBackground
         source={{uri: image}}
         style={styles.image}
+        imageStyle={{ borderRadius: 5}}
       >
         <View style={styles.darkenImage}>
           <View style={styles.infoContainer}>
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.description}>
-              {description?.substring(0, 170)}
+              {description?.substring(0, 150)}...
             </Text>
           </View>
         </View>
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     position: 'absolute',
-    bottom: vs(10),
+    bottom: vs(5),
     left: s(10),
     marginBottom: vs(10),
   },
@@ -109,8 +110,9 @@ const styles = StyleSheet.create({
     fontFamily: "GorditaRegular",
     fontSize: vs(8),
     color: "#fff",
-    lineHeight: vs(12),
+    lineHeight: vs(11),
     marginLeft: s(2),
-    marginTop: vs(1)
+    marginTop: vs(1),
+    paddingRight: s(10)
   },
 })
