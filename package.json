@@ -38,7 +38,7 @@
     "react-instantsearch-native": "^6.22.0",
     "react-native": "0.64.3",
     "react-native-gesture-handler": "~2.1.0",
-    "react-native-reanimated": "~2.3.1",
+    "react-native-reanimated": "~2.10.0",
     "react-native-screens": "~3.10.1",
     "react-native-size-matters": "^0.4.0",
     "react-native-svg": "12.1.1",
